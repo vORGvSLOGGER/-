@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>حرب الحلويات 🍬⚔️</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- جزيئات الخلفية -->
+<div id="bg-particles"></div>
+
+<!-- ============ الشاشة الرئيسية ============ -->
+<div id="screen-home" class="screen active">
+
+  <!-- الشريط العلوي: البروفايل -->
+  <header id="topbar">
+    <div id="profile-chip" title="تعديل البروفايل">
+      <span id="top-avatar" class="avatar-bubble">🍬</span>
+      <div class="profile-meta">
+        <span id="top-name">لاعب</span>
+        <span id="top-code" class="player-code">#------</span>
+      </div>
+    </div>
+    <div id="top-stats">
+      <span id="top-trophy" class="stat-pill" title="انتصارات">🏆 0</span>
+      <span id="top-coins" class="stat-pill coins" title="العملات">🪙 0</span>
+    </div>
+  </header>
+
+  <!-- الصفحات الثلاث -->
+  <main id="pages">
+
+    <!-- صفحة الأصدقاء (يمين) -->
+    <section id="page-friends" class="page">
+      <h2 class="page-title">👥 الأصدقاء</h2>
+      <div id="friends-offline-msg" class="offline-banner hidden">🔌 الأصدقاء والشات يحتاجون اتصال بالسيرفر</div>
+      <div class="add-friend-row">
+        <input id="friend-code-input" maxlength="6" placeholder="كود الصديق (مثال: AB3CD9)">
+        <button id="btn-add-friend" class="btn btn-small">➕ إضافة</button>
+      </div>
+      <div id="friend-requests-wrap" class="hidden">
+        <h3 class="section-label">📩 طلبات الصداقة</h3>
+        <div id="friend-requests"></div>
+      </div>
+      <h3 class="section-label">قائمة الأصدقاء</h3>
+      <div id="friends-list"><p class="empty-hint">ما عندك أصدقاء بعد.. أضف صديق بكوده! 🫶</p></div>
+
+      <!-- نافذة الشات -->
+      <div id="chat-panel" class="hidden">
+        <div id="chat-header">
+          <button id="btn-chat-back" class="icon-btn">←</button>
+          <span id="chat-with-avatar" class="avatar-bubble small">🍬</span>
+          <span id="chat-with-name">صديق</span>
+        </div>
+        <div id="chat-messages"></div>
+        <div id="chat-input-row">
+          <input id="chat-input" maxlength="300" placeholder="اكتب رسالة...">
+          <button id="btn-chat-send" class="btn btn-small">إرسال 🚀</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- صفحة اللعب (الوسط - الرئيسية) -->
+    <section id="page-play" class="page active">
+      <h1 id="game-logo">🍬 حرب الحلويات ⚔️</h1>
+      <p id="game-tagline">ادمج الحلويات.. ودمّر خصمك!</p>
+      <div id="mode-cards">
+        <button class="mode-card online" id="btn-mode-online">
+          <span class="mode-icon">🌐</span>
+          <span class="mode-name">أونلاين</span>
+          <span class="mode-desc">تحدّى لاعبين حقيقيين في رومات</span>
+        </button>
+        <button class="mode-card cpu" id="btn-mode-cpu">
+          <span class="mode-icon">🤖</span>
+          <span class="mode-name">ضد الكمبيوتر</span>
+          <span class="mode-desc">اختر صعوبتك وجرّب حظك</span>
+        </button>
+        <button class="mode-card local" id="btn-mode-local">
+          <span class="mode-icon">👨‍👩‍👧</span>
+          <span class="mode-name">محلي</span>
+          <span class="mode-desc">٢ - ٤ لاعبين على نفس الجهاز</span>
+        </button>
+      </div>
+
+      <!-- قسم الأونلاين: الرومات -->
+      <div id="online-section" class="hidden">
+        <div class="online-head">
+          <button id="btn-online-back" class="icon-btn">←</button>
+          <h2 class="page-title">🌐 اللعب أونلاين</h2>
+        </div>
+        <div id="online-offline-msg" class="offline-banner hidden">🔌 ما في اتصال بالسيرفر.. شغّل اللعبة بـ npm start</div>
+        <button id="btn-create-room" class="btn btn-wide btn-glow">➕ إنشاء روم</button>
+        <div class="join-private-row">
+          <input id="private-code-input" maxlength="6" placeholder="كود روم خاص">
+          <button id="btn-join-private" class="btn btn-small">دخول 🔑</button>
+        </div>
+        <h3 class="section-label">الرومات العامة</h3>
+        <div id="public-rooms"><p class="empty-hint">لا توجد رومات عامة حالياً.. أنشئ واحدة! ✨</p></div>
+      </div>
+    </section>
+
+    <!-- صفحة المتجر (يسار) -->
+    <section id="page-shop" class="page">
+      <h2 class="page-title">🛒 المتجر</h2>
+      <div id="shop-coins-banner">رصيدك: <span id="shop-coins">🪙 0</span></div>
+      <div id="shop-tabs">
+        <button class="shop-tab active" data-tab="boosters">💣 معززات</button>
+        <button class="shop-tab" data-tab="themes">🎨 ثيمات</button>
+        <button class="shop-tab" data-tab="avatars">😎 أفاتارات</button>
+        <button class="shop-tab" data-tab="coins">🪙 عملات</button>
+      </div>
+      <div id="shop-items"></div>
+    </section>
+  </main>
+
+  <!-- الشريط السفلي -->
+  <nav id="bottombar">
+    <button class="nav-btn" data-page="page-friends"><span class="nav-icon">👥</span>الأصدقاء<span id="nav-friends-badge" class="nav-badge hidden"></span></button>
+    <button class="nav-btn active main-nav" data-page="page-play"><span class="nav-icon">🎮</span>اللعب</button>
+    <button class="nav-btn" data-page="page-shop"><span class="nav-icon">🛒</span>المتجر</button>
+  </nav>
+</div>
+
+<!-- ============ شاشة المعركة ============ -->
+<div id="screen-battle" class="screen">
+  <div id="battle-top">
+    <button id="btn-battle-quit" class="icon-btn danger" title="انسحاب">✖</button>
+    <div id="turn-banner">دور: <span id="turn-name">...</span></div>
+    <div id="timer-wrap"><div id="timer-ring"><span id="timer-num">30</span></div></div>
+  </div>
+
+  <!-- لوحات صحة اللاعبين -->
+  <div id="players-hud"></div>
+
+  <!-- لوحة الحلويات -->
+  <div id="board-wrap">
+    <div id="board"></div>
+    <div id="board-lock" class="hidden"></div>
+  </div>
+
+  <!-- المعززات داخل المعركة -->
+  <div id="battle-boosters"></div>
+
+  <!-- رسالة تمرير الدور للمحلي -->
+  <div id="pass-device-overlay" class="overlay hidden">
+    <div class="modal pass-modal">
+      <span id="pass-avatar" class="avatar-bubble big">🍬</span>
+      <h2 id="pass-title">دور: لاعب</h2>
+      <p>سلّم الجهاز للاعب التالي 📱</p>
+      <button id="btn-pass-ready" class="btn btn-glow">جاهز! 🚀</button>
+    </div>
+  </div>
+
+  <!-- شاشة النهاية -->
+  <div id="battle-end-overlay" class="overlay hidden">
+    <div class="modal end-modal">
+      <div id="end-emoji">🏆</div>
+      <h2 id="end-title">فوز!</h2>
+      <p id="end-sub"></p>
+      <p id="end-coins" class="coin-reward"></p>
+      <div class="modal-actions">
+        <button id="btn-end-rematch" class="btn">🔄 إعادة</button>
+        <button id="btn-end-home" class="btn btn-glow">🏠 الرئيسية</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ النوافذ المنبثقة ============ -->
+
+<!-- تعديل البروفايل -->
+<div id="modal-profile" class="overlay hidden">
+  <div class="modal">
+    <h2>✏️ بروفايلك</h2>
+    <label class="field-label">اسمك</label>
+    <input id="profile-name-input" maxlength="20" placeholder="اكتب اسمك">
+    <label class="field-label">الأفاتار</label>
+    <div id="avatar-picker"></div>
+    <div class="profile-stats-box">
+      <span>🏆 انتصارات: <b id="stat-wins">0</b></span>
+      <span>🎮 مباريات: <b id="stat-games">0</b></span>
+      <span>💥 أعلى ضرر: <b id="stat-damage">0</b></span>
+    </div>
+    <div class="modal-actions">
+      <button id="btn-profile-save" class="btn btn-glow">حفظ ✅</button>
+    </div>
+  </div>
+</div>
+
+<!-- اختيار صعوبة الكمبيوتر -->
+<div id="modal-difficulty" class="overlay hidden">
+  <div class="modal">
+    <h2>🤖 اختر الصعوبة</h2>
+    <div class="choice-list">
+      <button class="choice-btn" data-diff="easy">😊 سهل <small>للمبتدئين.. الكمبيوتر يغفل</small></button>
+      <button class="choice-btn" data-diff="medium">😐 متوسط <small>يدور على دمج ٤ ويحرجك</small></button>
+      <button class="choice-btn" data-diff="hard">😈 صعب <small>يحسب كل حركة.. حظ موفق!</small></button>
+    </div>
+    <button class="btn btn-ghost modal-close">إلغاء</button>
+  </div>
+</div>
+
+<!-- اختيار الطور -->
+<div id="modal-mode" class="overlay hidden">
+  <div class="modal">
+    <h2>⚔️ اختر الطور</h2>
+    <div class="choice-list">
+      <button class="choice-btn" data-gamemode="classic">⚔️ الكلاسيكي <small>٣٠ ثانية للدور • ١٢٠ صحة (٣ طبقات)</small></button>
+      <button class="choice-btn" data-gamemode="blitz">⚡ البرق <small>١٥ ثانية فقط! • ٩٠ صحة • سرعة جنونية</small></button>
+      <button class="choice-btn" data-gamemode="sudden">💀 الموت المفاجئ <small>طبقة واحدة ٤٠ • دمج ٥+ بضرر مضاعف</small></button>
+    </div>
+    <button class="btn btn-ghost modal-close">إلغاء</button>
+  </div>
+</div>
+
+<!-- عدد اللاعبين المحلي -->
+<div id="modal-local" class="overlay hidden">
+  <div class="modal">
+    <h2>👨‍👩‍👧 كم لاعب؟</h2>
+    <div class="choice-row">
+      <button class="choice-btn square" data-count="2">٢</button>
+      <button class="choice-btn square" data-count="3">٣</button>
+      <button class="choice-btn square" data-count="4">٤</button>
+    </div>
+    <button class="btn btn-ghost modal-close">إلغاء</button>
+  </div>
+</div>
+
+<!-- إنشاء روم -->
+<div id="modal-create-room" class="overlay hidden">
+  <div class="modal">
+    <h2>➕ إنشاء روم</h2>
+    <label class="field-label">اسم الروم</label>
+    <input id="room-name-input" maxlength="30" placeholder="روم الأبطال 🔥">
+    <label class="field-label">النوع</label>
+    <div class="choice-row">
+      <button class="choice-btn toggle active" id="room-type-public">🌍 عام</button>
+      <button class="choice-btn toggle" id="room-type-private">🔒 خاص</button>
+    </div>
+    <label class="field-label">الطور</label>
+    <div class="choice-row small-choices">
+      <button class="choice-btn toggle active" data-roommode="classic">⚔️ كلاسيكي</button>
+      <button class="choice-btn toggle" data-roommode="blitz">⚡ برق</button>
+      <button class="choice-btn toggle" data-roommode="sudden">💀 مفاجئ</button>
+    </div>
+    <div class="modal-actions">
+      <button id="btn-room-create-confirm" class="btn btn-glow">إنشاء 🚀</button>
+      <button class="btn btn-ghost modal-close">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- لوبي الروم (انتظار الخصم) -->
+<div id="modal-room-lobby" class="overlay hidden">
+  <div class="modal">
+    <h2 id="lobby-room-name">روم</h2>
+    <p id="lobby-room-code" class="room-code-display"></p>
+    <p class="hint">شارك الكود مع صديقك للروم الخاص 🔑</p>
+    <div id="lobby-players"></div>
+    <div class="modal-actions">
+      <button id="btn-lobby-start" class="btn btn-glow hidden">ابدأ المعركة ⚔️</button>
+      <button id="btn-lobby-leave" class="btn btn-ghost">خروج</button>
+    </div>
+  </div>
+</div>
+
+<!-- إشعارات Toast -->
+<div id="toast-wrap"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/sounds.js"></script>
+<script src="js/profile.js"></script>
+<script src="js/shop.js"></script>
+<script src="js/board.js"></script>
+<script src="js/animations.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/battle.js"></script>
+<script src="js/online.js"></script>
+<script src="js/friends.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
