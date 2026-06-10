@@ -49,6 +49,19 @@ npm start
 
 أضف أصدقاءك بكودهم المكون من ٦ أحرف (يظهر تحت اسمك)، وراسلهم بشات مباشر.
 
+## 🌍 النشر
+
+### GitHub Pages (نسخة بدون أونلاين)
+1. اجعل المستودع **Public** من Settings → General → Danger Zone → Change visibility
+2. فعّل Pages: Settings → Pages → Source: **GitHub Actions**
+3. أعد تشغيل الـ workflow من تبويب Actions — الدومين: `https://vorgvslogger.github.io/-/`
+
+### Render.com (اللعبة كاملة مع الأونلاين — مجاني)
+1. سجّل في [render.com](https://render.com) بحساب GitHub
+2. New + → **Web Service** → اختر مستودع اللعبة
+3. اضغط Deploy (الإعدادات تنقرأ تلقائياً من `render.yaml`)
+4. الدومين يطلع لك بشكل: `https://candy-war.onrender.com`
+
 ## 🛠️ التقنية
 
 - **Frontend**: HTML + CSS + Vanilla JavaScript (بدون أي frameworks)

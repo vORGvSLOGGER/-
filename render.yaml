@@ -1,0 +1,8 @@
+# نشر اللعبة كاملة (مع الأونلاين) على Render.com — خطة مجانية
+services:
+  - type: web
+    name: candy-war
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
