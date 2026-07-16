@@ -1,4 +1,4 @@
-// المتجر: معززات، ثيمات حلويات، أفاتارات، حزم عملات
+// المتجر الملكي: معززات، اللوك (ثيمات)، أفاتارات، إطارات، عملات، جواهر
 const Shop = (() => {
   const BOOSTERS = [
     { id: 'bomb',    icon: '💣', name: 'قنبلة حلوى', desc: 'تفجّر منطقة 3×3 وتضرب الخصم', price: 80 },
@@ -8,40 +8,53 @@ const Shop = (() => {
   ];
 
   const THEMES = [
-    { id: 'classic', icon: '🍬', name: 'الحلويات', desc: 'الثيم الأساسي', price: 0 },
+    { id: 'classic', icon: '🍬', name: 'الحلويات', desc: 'اللوك الأساسي', price: 0 },
     { id: 'fruits',  icon: '🍓', name: 'الفواكه',  desc: '🍓🍊🍋🍉🍇🥝', price: 300 },
     { id: 'gems',    icon: '💎', name: 'الجواهر',  desc: '💎🔶🟢🔷🟣❤️', price: 500 },
     { id: 'animals', icon: '🐱', name: 'الحيوانات', desc: '🐱🐶🐸🐼🦊🐵', price: 400 },
   ];
 
   const AVATARS = [
-    { id: '👑', icon: '👑', name: 'الملك',     price: 250 },
-    { id: '🐉', icon: '🐉', name: 'التنين',    price: 350 },
-    { id: '🦄', icon: '🦄', name: 'يونيكورن',  price: 300 },
-    { id: '🤖', icon: '🤖', name: 'الروبوت',   price: 200 },
-    { id: '😈', icon: '😈', name: 'الشرير',    price: 220 },
-    { id: '🥷', icon: '🥷', name: 'النينجا',   price: 280 },
+    { id: '👑', name: 'الملك',     price: 250 },
+    { id: '🐉', name: 'التنين',    price: 350 },
+    { id: '🦄', name: 'يونيكورن',  price: 300 },
+    { id: '🤖', name: 'الروبوت',   price: 200 },
+    { id: '😈', name: 'الشرير',    price: 220 },
+    { id: '🥷', name: 'النينجا',   price: 280 },
+    { id: '🧙', name: 'الساحر',    price: 320 },
+    { id: '🦁', name: 'الأسد',     price: 260 },
+  ];
+  const FREE_AVATARS = ['🍬', '🍭', '🍩', '🧁', '🍫', '🍪', '🍓', '🐼', '🐸', '⭐'];
+
+  const FRAMES = [
+    { id: '',   icon: '⚪', name: 'بدون إطار', gems: 0 },
+    { id: '✨', icon: '✨', name: 'اللامع',    gems: 3 },
+    { id: '🔥', icon: '🔥', name: 'الناري',    gems: 5 },
+    { id: '🌈', icon: '🌈', name: 'قوس قزح',   gems: 8 },
+    { id: '👑', icon: '👑', name: 'الملكي',    gems: 12 },
+    { id: '⚡', icon: '⚡', name: 'الصاعقة',   gems: 6 },
   ];
 
   const COIN_PACKS = [
-    { id: 'p1', icon: '🪙', name: 'كيس عملات',   amount: 500,  desc: 'شراء تجريبي مجاني' },
-    { id: 'p2', icon: '💰', name: 'صندوق عملات', amount: 1500, desc: 'شراء تجريبي مجاني' },
-    { id: 'p3', icon: '🏆', name: 'كنز الحلويات', amount: 4000, desc: 'شراء تجريبي مجاني' },
+    { icon: '🪙', name: 'كيس عملات',    amount: 500 },
+    { icon: '💰', name: 'صندوق عملات',  amount: 1500 },
+    { icon: '🏆', name: 'كنز الحلويات', amount: 4000 },
+  ];
+  const GEM_PACKS = [
+    { icon: '💎', name: 'حفنة جواهر',  amount: 10 },
+    { icon: '💠', name: 'كيس جواهر',   amount: 30 },
+    { icon: '👑', name: 'كنز الجواهر', amount: 80 },
   ];
 
   let activeTab = 'boosters';
 
   function init() {
-    document.querySelectorAll('.shop-tab').forEach(btn => {
+    document.querySelectorAll('.shop-tab[data-tab]').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.shop-tab').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        activeTab = btn.dataset.tab;
         Sounds.click();
-        render();
+        render(btn.dataset.tab);
       });
     });
-    render();
   }
 
   function itemCard({ icon, name, desc, footer }) {
@@ -54,17 +67,22 @@ const Shop = (() => {
     return div;
   }
 
-  function buyBtn(label, onClick, disabled) {
+  function buyBtn(label, onClick, disabled, cls) {
     const b = document.createElement('button');
-    b.className = 'btn-buy';
+    b.className = 'btn-buy' + (cls ? ' ' + cls : '');
     b.textContent = label;
     b.disabled = !!disabled;
     b.addEventListener('click', onClick);
     return b;
   }
 
-  function render() {
+  function render(tab) {
+    if (tab) {
+      activeTab = tab;
+      document.querySelectorAll('.shop-tab[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    }
     const wrap = document.getElementById('shop-items');
+    if (!wrap) return;
     wrap.innerHTML = '';
     const p = Profile.data;
 
@@ -107,7 +125,7 @@ const Shop = (() => {
             if (!Profile.spendCoins(item.price)) return UI.toast('عملاتك ما تكفي 😢', 'error');
             p.ownedThemes.push(item.id); p.equippedTheme = item.id;
             Profile.save(); Sounds.buy();
-            UI.toast(`مبروك! ثيم ${item.name} ${item.icon}`, 'success');
+            UI.toast(`مبروك! لوك ${item.name} ${item.icon}`, 'success');
             render();
           }, p.coins < item.price));
         }
@@ -116,36 +134,81 @@ const Shop = (() => {
     }
 
     if (activeTab === 'avatars') {
+      // المجانية أولاً (تفعيل مباشر)
+      FREE_AVATARS.forEach(av => {
+        const equipped = p.avatar === av;
+        const footer = document.createElement('div');
+        const b = buyBtn(equipped ? 'مُفعّل ✅' : 'تفعيل', () => {
+          p.avatar = av; Profile.save(); Sounds.click(); render();
+        });
+        if (equipped) b.classList.add('equipped');
+        footer.appendChild(b);
+        wrap.appendChild(itemCard({ icon: av, name: 'مجاني', desc: '', footer }));
+      });
       AVATARS.forEach(item => {
         const owned = p.ownedAvatars.includes(item.id);
+        const equipped = p.avatar === item.id;
         const footer = document.createElement('div');
-        if (owned) {
-          const span = document.createElement('span');
-          span.className = 'item-owned';
-          span.textContent = 'تملكه ✅ (من البروفايل)';
-          footer.appendChild(span);
+        if (equipped) {
+          const b = buyBtn('مُفعّل ✅', () => {}); b.classList.add('equipped'); footer.appendChild(b);
+        } else if (owned) {
+          footer.appendChild(buyBtn('تفعيل', () => { p.avatar = item.id; Profile.save(); Sounds.click(); render(); }));
         } else {
           footer.appendChild(buyBtn(`شراء 🪙${item.price}`, () => {
             if (!Profile.spendCoins(item.price)) return UI.toast('عملاتك ما تكفي 😢', 'error');
-            p.ownedAvatars.push(item.id);
+            p.ownedAvatars.push(item.id); p.avatar = item.id;
             Profile.save(); Sounds.buy();
-            UI.toast(`مبروك أفاتار ${item.name} ${item.icon}! فعّله من بروفايلك`, 'success');
+            UI.toast(`مبروك أفاتار ${item.name} ${item.id}!`, 'success');
             render();
           }, p.coins < item.price));
         }
-        wrap.appendChild(itemCard({ ...item, desc: '', footer }));
+        wrap.appendChild(itemCard({ icon: item.id, name: item.name, desc: '', footer }));
+      });
+    }
+
+    if (activeTab === 'frames') {
+      FRAMES.forEach(item => {
+        const owned = item.gems === 0 || p.ownedFrames.includes(item.id);
+        const equipped = (p.frame || '') === item.id;
+        const footer = document.createElement('div');
+        if (equipped) {
+          const b = buyBtn('مُفعّل ✅', () => {}); b.classList.add('equipped'); footer.appendChild(b);
+        } else if (owned) {
+          footer.appendChild(buyBtn('تفعيل', () => { p.frame = item.id; Profile.save(); Sounds.click(); render(); }));
+        } else {
+          footer.appendChild(buyBtn(`شراء 💎${item.gems}`, () => {
+            if (!Profile.spendGems(item.gems)) return UI.toast('جواهرك ما تكفي 😢', 'error');
+            p.ownedFrames.push(item.id); p.frame = item.id;
+            Profile.save(); Sounds.buy();
+            UI.toast(`مبروك إطار ${item.name} ${item.icon}!`, 'success');
+            render();
+          }, p.gems < item.gems, 'gem'));
+        }
+        wrap.appendChild(itemCard({ icon: item.icon, name: item.name, desc: item.gems ? `إطار حول أفاتارك ${item.icon}` : 'الشكل الافتراضي', footer }));
       });
     }
 
     if (activeTab === 'coins') {
       COIN_PACKS.forEach(item => {
         const footer = document.createElement('div');
-        footer.appendChild(buyBtn(`احصل عليها 🎁`, () => {
+        footer.appendChild(buyBtn('احصل عليها 🎁', () => {
           Profile.addCoins(item.amount);
           UI.toast(`+🪙${item.amount}! استمتع 🎉`, 'success');
           render();
         }));
-        wrap.appendChild(itemCard({ ...item, desc: `+🪙${item.amount} — ${item.desc}`, footer }));
+        wrap.appendChild(itemCard({ ...item, desc: `+🪙${item.amount} — شراء تجريبي مجاني`, footer }));
+      });
+    }
+
+    if (activeTab === 'gems') {
+      GEM_PACKS.forEach(item => {
+        const footer = document.createElement('div');
+        footer.appendChild(buyBtn('احصل عليها 🎁', () => {
+          Profile.addGems(item.amount);
+          UI.toast(`+💎${item.amount}! استمتع 🎉`, 'success');
+          render();
+        }, false, 'gem'));
+        wrap.appendChild(itemCard({ ...item, desc: `+💎${item.amount} — شراء تجريبي مجاني`, footer }));
       });
     }
   }

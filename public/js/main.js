@@ -1,4 +1,4 @@
-// الربط العام: التنقل، النوافذ، البروفايل، تدفقات بدء اللعب
+// الربط العام: أدوات الواجهة، تدفقات بدء اللعب، الإعدادات
 const UI = (() => {
   const $ = id => document.getElementById(id);
 
@@ -23,112 +23,37 @@ const UI = (() => {
   return { toast, openModal, closeModal, closeAllModals };
 })();
 
-(() => {
+const Main = (() => {
   const $ = id => document.getElementById(id);
-
-  // ===== جزيئات الخلفية =====
-  function spawnParticles() {
-    const wrap = $('bg-particles');
-    const emojis = ['🍬', '🍭', '🍩', '🧁', '🍫', '⭐', '🍪'];
-    for (let i = 0; i < 14; i++) {
-      const p = document.createElement('span');
-      p.className = 'particle';
-      p.textContent = emojis[i % emojis.length];
-      p.style.left = Math.random() * 100 + 'vw';
-      p.style.animationDuration = (14 + Math.random() * 18) + 's';
-      p.style.animationDelay = (-Math.random() * 20) + 's';
-      p.style.fontSize = (16 + Math.random() * 22) + 'px';
-      wrap.appendChild(p);
-    }
-  }
-
-  // ===== التنقل بين الصفحات =====
-  function initNav() {
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        Sounds.click();
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        $(btn.dataset.page).classList.add('active');
-      });
-    });
-  }
-
-  // ===== البروفايل =====
-  let pickedAvatar = null;
-
-  function openProfileModal() {
-    const p = Profile.data;
-    $('profile-name-input').value = p.name;
-    $('stat-wins').textContent = p.wins;
-    $('stat-games').textContent = p.games;
-    $('stat-damage').textContent = p.maxDamage;
-    pickedAvatar = p.avatar;
-    const picker = $('avatar-picker');
-    picker.innerHTML = '';
-    Profile.allAvatars().forEach(av => {
-      const d = document.createElement('div');
-      d.className = 'avatar-opt' + (av === pickedAvatar ? ' selected' : '');
-      d.textContent = av;
-      d.addEventListener('click', () => {
-        pickedAvatar = av;
-        picker.querySelectorAll('.avatar-opt').forEach(x => x.classList.remove('selected'));
-        d.classList.add('selected');
-        Sounds.click();
-      });
-      picker.appendChild(d);
-    });
-    UI.openModal('modal-profile');
-  }
-
-  function initProfile() {
-    $('profile-chip').addEventListener('click', openProfileModal);
-    $('btn-profile-save').addEventListener('click', () => {
-      const name = $('profile-name-input').value.trim();
-      if (name) Profile.data.name = name;
-      if (pickedAvatar) Profile.data.avatar = pickedAvatar;
-      Profile.save();
-      Online.updateProfile();
-      UI.closeModal('modal-profile');
-      UI.toast('تم حفظ بروفايلك ✅', 'success');
-      Sounds.buy();
-    });
-  }
-
-  // ===== تدفقات بدء اللعب =====
-  // cpu: صعوبة → طور → ابدأ | local: عدد → طور → ابدأ
   let pending = {};
 
-  function initModes() {
-    $('btn-mode-cpu').addEventListener('click', () => {
+  function startLocalFlow() {
+    pending = { type: 'local' };
+    UI.openModal('modal-local');
+  }
+
+  function initPlayFlows() {
+    $('play-cpu').addEventListener('click', () => {
       Sounds.click();
       pending = { type: 'cpu' };
       UI.openModal('modal-difficulty');
     });
 
-    $('btn-mode-local').addEventListener('click', () => {
-      Sounds.click();
-      pending = { type: 'local' };
-      UI.openModal('modal-local');
-    });
+    $('play-local').addEventListener('click', () => { Sounds.click(); startLocalFlow(); });
 
-    $('btn-mode-online').addEventListener('click', () => {
+    $('play-online').addEventListener('click', () => {
       Sounds.click();
-      $('mode-cards').classList.add('hidden');
-      $('game-logo').classList.add('hidden');
-      $('game-tagline').classList.add('hidden');
-      $('online-section').classList.remove('hidden');
+      if (Profile.isGuest) return UI.toast('الأونلاين يحتاج حساب — سجل دخولك 👑', 'error');
+      $('play-options').classList.add('hidden');
+      $('online-area').classList.remove('hidden');
     });
 
     $('btn-online-back').addEventListener('click', () => {
-      $('mode-cards').classList.remove('hidden');
-      $('game-logo').classList.remove('hidden');
-      $('game-tagline').classList.remove('hidden');
-      $('online-section').classList.add('hidden');
+      Sounds.click();
+      $('online-area').classList.add('hidden');
+      $('play-options').classList.remove('hidden');
     });
 
-    // اختيار الصعوبة
     document.querySelectorAll('#modal-difficulty .choice-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         pending.difficulty = btn.dataset.diff;
@@ -138,7 +63,6 @@ const UI = (() => {
       });
     });
 
-    // عدد اللاعبين المحلي
     document.querySelectorAll('#modal-local .choice-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         pending.localCount = +btn.dataset.count;
@@ -148,18 +72,17 @@ const UI = (() => {
       });
     });
 
-    // اختيار الطور → انطلاق!
     document.querySelectorAll('#modal-mode .choice-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         pending.mode = btn.dataset.gamemode;
         Sounds.turn();
         UI.closeModal('modal-mode');
+        Castle.closeAllPanels();
         Battle.start(pending);
       });
     });
   }
 
-  // ===== إنشاء روم =====
   function initRooms() {
     let roomIsPublic = true;
     let roomMode = 'classic';
@@ -193,7 +116,7 @@ const UI = (() => {
     });
 
     $('btn-room-create-confirm').addEventListener('click', () => {
-      const name = $('room-name-input').value.trim() || `روم ${Profile.data.name}`;
+      const name = $('room-name-input').value.trim() || `روم ${Profile.data.username}`;
       Online.createRoom(name, roomIsPublic, roomMode);
     });
 
@@ -210,7 +133,30 @@ const UI = (() => {
     });
   }
 
-  // أزرار الإغلاق العامة
+  function initSettings() {
+    $('set-sfx').addEventListener('change', (e) => {
+      Sounds.setMuted(!e.target.checked);
+      localStorage.setItem('candywar_sfx', e.target.checked ? '1' : '0');
+      if (e.target.checked) Sounds.click();
+    });
+    $('set-music').addEventListener('change', (e) => {
+      localStorage.setItem('candywar_music', e.target.checked ? '1' : '0');
+      if (e.target.checked) Sounds.startMusic(); else Sounds.stopMusic();
+    });
+    // استرجاع الحفظ
+    const sfx = localStorage.getItem('candywar_sfx') !== '0';
+    const music = localStorage.getItem('candywar_music') === '1';
+    $('set-sfx').checked = sfx;
+    Sounds.setMuted(!sfx);
+    $('set-music').checked = music;
+
+    $('btn-logout').addEventListener('click', () => { Sounds.click(); Auth.logout(); });
+    $('btn-open-friends').addEventListener('click', () => { Sounds.click(); Castle.openPanel('panel-friends'); });
+    $('btn-support').addEventListener('click', () => { location.href = 'mailto:support@candywar.game?subject=' + encodeURIComponent('دعم حرب الحلويات'); });
+    $('btn-privacy').addEventListener('click', () => UI.openModal('modal-terms'));
+    $('btn-terms2').addEventListener('click', () => UI.openModal('modal-terms'));
+  }
+
   function initModalCloses() {
     document.querySelectorAll('.modal-close').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -220,18 +166,19 @@ const UI = (() => {
     });
   }
 
-  // ===== الانطلاق =====
   document.addEventListener('DOMContentLoaded', () => {
-    Profile.load();
-    spawnParticles();
-    initNav();
-    initProfile();
-    initModes();
-    initRooms();
-    initModalCloses();
+    Castle.init();
     Shop.init();
     Friends.init();
+    Leaderboard.init();
     Battle.init();
+    Auth.init();
+    initPlayFlows();
+    initRooms();
+    initSettings();
+    initModalCloses();
     Online.connect();
   });
+
+  return { startLocalFlow };
 })();

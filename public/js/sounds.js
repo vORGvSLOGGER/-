@@ -26,7 +26,36 @@ const Sounds = (() => {
     o.start(t0); o.stop(t0 + dur + 0.05);
   }
 
+  // ===== موسيقى خلفية لطيفة (أربيجيو متكرر) =====
+  let musicTimer = null;
+  const MELODY = [523, 659, 784, 659, 587, 784, 880, 784, 523, 659, 784, 1047, 880, 784, 659, 587];
+  let melodyIdx = 0;
+
+  function musicStep() {
+    if (muted) return;
+    const f = MELODY[melodyIdx % MELODY.length];
+    melodyIdx++;
+    tone(f, 0.5, 'sine', 0.035);
+    tone(f / 2, 0.6, 'triangle', 0.02);
+  }
+
+  function startMusic() {
+    if (musicTimer) return;
+    ac();
+    musicTimer = setInterval(musicStep, 380);
+  }
+
+  function stopMusic() {
+    clearInterval(musicTimer);
+    musicTimer = null;
+  }
+
+  function startMusicIfEnabled() {
+    if (localStorage.getItem('candywar_music') === '1') startMusic();
+  }
+
   return {
+    startMusic, stopMusic, startMusicIfEnabled,
     click()   { tone(620, 0.07, 'triangle', 0.10); },
     swap()    { tone(380, 0.10, 'sine', 0.12, 520); },
     invalid() { tone(180, 0.16, 'sawtooth', 0.08, 120); },

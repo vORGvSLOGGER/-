@@ -29,9 +29,9 @@ const Battle = (() => {
     let players = [];
 
     if (config.type === 'cpu') {
-      const diffName = { easy: '🤖 روبوت سهل', medium: '🤖 روبوت متوسط', hard: '😈 روبوت شرير' }[config.difficulty];
+      const diffName = { easy: '🤖 بوت سهل', medium: '🤖 بوت متوسط', hard: '😈 بوت شرير' }[config.difficulty];
       players = [
-        { name: me.name, avatar: me.avatar, control: 'me' },
+        { name: me.username, avatar: me.avatar, control: 'me' },
         { name: diffName, avatar: config.difficulty === 'hard' ? '😈' : '🤖', control: 'cpu' },
       ];
     } else if (config.type === 'local') {
@@ -57,7 +57,8 @@ const Battle = (() => {
     };
 
     // بناء الواجهة
-    $('screen-home').classList.remove('active');
+    $('screen-castle').classList.remove('active');
+    $('screen-auth').classList.remove('active');
     $('screen-battle').classList.add('active');
     $('battle-end-overlay').classList.add('hidden');
     $('pass-device-overlay').classList.add('hidden');
@@ -216,6 +217,8 @@ const Battle = (() => {
   // كل خطوة دمج: حلويات تطير للهدف وينطبق ضرر الخطوة فوراً
   function onMatchStep(cells) {
     if (S.over) return;
+    const ctrl = S.players[S.turn].control;
+    if (ctrl === 'me' || ctrl === 'hotseat') Missions.track('crush', cells.length);
     const dmg = cells.length;
     const ti = targetIndex();
     applyFlyingDamage(cells, ti, dmg);
@@ -258,6 +261,8 @@ const Battle = (() => {
   // نهاية حل اللوحة بعد حركة: نقرر يكمل الدور أو يمرر
   function onResolved(result) {
     if (S.over || !result) return;
+    const ctrl = S.players[S.turn]?.control;
+    if (result.cascades >= 3 && (ctrl === 'me' || ctrl === 'hotseat')) Missions.track('combo', result.cascades);
     if (result.damage === 0) { checkEnd(); return; }
 
     // الموت المفاجئ: دمج 5+ يضاعف الضرر
@@ -418,9 +423,10 @@ const Battle = (() => {
     const p = Profile.data;
     p.games++;
     p.maxDamage = Math.max(p.maxDamage, S.totalMyDamage);
+    Missions.track('play');
 
     const iWon = winner && (S.myIndex >= 0 ? S.players.indexOf(winner) === S.myIndex : false);
-    let coins = 0;
+    let coins = 0, gems = 0;
     if (S.type === 'local') {
       coins = 30; // مكافأة جلسة محلية
       $('end-emoji').textContent = '🏆';
@@ -429,7 +435,9 @@ const Battle = (() => {
       Sounds.win();
     } else if (iWon) {
       coins = S.type === 'online' ? 100 : ({ easy: 20, medium: 40, hard: 70 }[S.difficulty] || 30);
+      gems = S.type === 'online' ? 3 : (S.difficulty === 'hard' ? 2 : 1);
       p.wins++;
+      Missions.track('win');
       $('end-emoji').textContent = '🏆';
       $('end-title').textContent = 'فووووز! 🎉';
       $('end-sub').textContent = `دمّرت خصمك بـ ${S.totalMyDamage} نقطة ضرر 💥`;
@@ -442,8 +450,9 @@ const Battle = (() => {
       Sounds.lose();
     }
     Profile.addCoins(coins, true);
+    if (gems) Profile.addGems(gems, true);
     Profile.save();
-    $('end-coins').textContent = `+🪙${coins}`;
+    $('end-coins').textContent = `+🪙${coins}` + (gems ? ` +💎${gems}` : '');
 
     $('btn-end-rematch').classList.toggle('hidden', S.type === 'online');
     setTimeout(() => $('battle-end-overlay').classList.remove('hidden'), 900);
@@ -471,10 +480,11 @@ const Battle = (() => {
 
   function goHome() {
     $('screen-battle').classList.remove('active');
-    $('screen-home').classList.add('active');
+    $('screen-castle').classList.add('active');
     $('battle-end-overlay').classList.add('hidden');
-    Profile.renderTopbar();
-    Shop.render();
+    Castle.closeAllPanels();
+    Castle.layout();
+    Profile.render();
   }
 
   let lastConfig = null;

@@ -10,119 +10,246 @@
 </head>
 <body>
 
-<!-- جزيئات الخلفية -->
-<div id="bg-particles"></div>
+<!-- ============ شاشة التسجيل / الدخول ============ -->
+<div id="screen-auth" class="screen active">
+  <div class="auth-bg" id="auth-bg-login"></div>
+  <div class="auth-bg hidden-bg" id="auth-bg-register"></div>
+  <div id="auth-content">
+    <div id="auth-logo">
+      <h1>🍬 حرب الحلويات ⚔️</h1>
+      <p>المغامرة الحُلوة تبدأ!</p>
+    </div>
 
-<!-- ============ الشاشة الرئيسية ============ -->
-<div id="screen-home" class="screen active">
+    <!-- تسجيل الدخول -->
+    <div id="auth-login" class="candy-panel auth-panel">
+      <h2>تسجيل الدخول</h2>
+      <label class="field-label">اسم المستخدم</label>
+      <input id="login-username" maxlength="16" placeholder="أدخل اسمك...">
+      <label class="field-label">رمز الدخول (6 أرقام)</label>
+      <input id="login-code" type="password" inputmode="numeric" maxlength="6" placeholder="••••••">
+      <button id="btn-login" class="btn-royal">تسجيل الدُخول 👑</button>
+      <div class="auth-links">
+        <a id="link-recover">نسيت رمز الدخول؟</a>
+        <a id="link-to-register">إنشاء حساب جديد</a>
+      </div>
+      <button id="btn-guest" class="btn-ghost-choco hidden">🔌 اللعب بدون اتصال (ضيف)</button>
+      <p id="auth-status" class="auth-status">... جاري الاتصال بالمملكة</p>
+    </div>
 
-  <!-- الشريط العلوي: البروفايل -->
-  <header id="topbar">
-    <div id="profile-chip" title="تعديل البروفايل">
-      <span id="top-avatar" class="avatar-bubble">🍬</span>
-      <div class="profile-meta">
-        <span id="top-name">لاعب</span>
-        <span id="top-code" class="player-code">#------</span>
+    <!-- إنشاء حساب -->
+    <div id="auth-register" class="candy-panel auth-panel hidden">
+      <h2>إنشاء حساب جديد</h2>
+      <label class="field-label">البريد الإلكتروني <small>(للأمان واسترجاع الحساب)</small></label>
+      <input id="reg-email" type="email" placeholder="أدخل بريدك الإلكتروني...">
+      <label class="field-label">اسم المستخدم <small>(يظهر للاعبين — غير قابل للتكرار)</small></label>
+      <input id="reg-username" maxlength="16" placeholder="أدخل اسم المستخدم...">
+      <label class="field-label">رمز الدخول (6 أرقام)</label>
+      <input id="reg-code" type="password" inputmode="numeric" maxlength="6" placeholder="••••••">
+      <label class="field-label">تاريخ الميلاد <small>(بالضبط — لاسترجاع الحساب)</small></label>
+      <input id="reg-birthdate" type="date">
+      <div class="geo-row">
+        <div>
+          <label class="field-label">الدولة</label>
+          <select id="reg-country"><option value="">اختر 🌍</option></select>
+        </div>
+        <div>
+          <label class="field-label">المدينة</label>
+          <select id="reg-city" disabled><option value="">اختر الدولة أولاً</option></select>
+        </div>
+      </div>
+      <label class="terms-row">
+        <input type="checkbox" id="reg-agree">
+        <span>أوافق على <a id="link-terms">الشروط وسياسة الاستخدام</a></span>
+      </label>
+      <button id="btn-register" class="btn-royal">إنشاء الحساب ✨</button>
+      <div class="auth-links"><a id="link-to-login">لديك حساب بالفعل؟ تسجيل الدخول</a></div>
+    </div>
+
+    <!-- استرجاع الحساب -->
+    <div id="auth-recover" class="candy-panel auth-panel hidden">
+      <h2>🔑 استرجاع الحساب</h2>
+      <p class="hint">أدخل بياناتك المسجلة بالضبط حتى نتأكد أنه حسابك</p>
+      <input id="rec-username" maxlength="16" placeholder="اسم المستخدم">
+      <input id="rec-email" type="email" placeholder="البريد الإلكتروني">
+      <input id="rec-birthdate" type="date">
+      <div class="geo-row">
+        <select id="rec-country"><option value="">الدولة 🌍</option></select>
+        <select id="rec-city" disabled><option value="">المدينة</option></select>
+      </div>
+      <input id="rec-newcode" type="password" inputmode="numeric" maxlength="6" placeholder="رمز الدخول الجديد (6 أرقام)">
+      <button id="btn-recover" class="btn-royal">استرجاع الحساب 🔓</button>
+      <div class="auth-links"><a id="link-back-login">العودة لتسجيل الدخول</a></div>
+    </div>
+  </div>
+
+  <!-- انميشن دخول القصر -->
+  <div id="castle-entry" class="hidden"><div class="entry-flash"></div></div>
+</div>
+
+<!-- ============ القصر (الصفحة الرئيسية) ============ -->
+<div id="screen-castle" class="screen">
+  <div id="castle-stage"></div>
+
+  <!-- الشريط العلوي -->
+  <div id="castle-topbar">
+    <div id="castle-profile" class="royal-chip">
+      <span id="c-avatar" class="chip-avatar">🍬</span>
+      <div class="chip-meta"><b id="c-username">لاعب</b><small id="c-wins">🏆 0</small></div>
+    </div>
+    <div class="topbar-currencies">
+      <button class="royal-chip currency coins-chip" id="chip-coins">🪙 <b id="c-coins">0</b><span class="plus">+</span></button>
+      <button class="royal-chip currency gems-chip" id="chip-gems">💎 <b id="c-gems">0</b><span class="plus">+</span></button>
+    </div>
+  </div>
+
+  <!-- نقاط التفاعل تُبنى بالجافاسكريبت -->
+  <div id="hotspots"></div>
+
+  <!-- ============ اللوحات ============ -->
+
+  <!-- بدء اللعب -->
+  <div id="panel-play" class="royal-overlay hidden">
+    <div class="candy-panel big-panel">
+      <button class="panel-close">✖</button>
+      <h2 class="panel-title">⚔️ ابدأ اللعب</h2>
+      <div id="play-options">
+        <button class="play-card" id="play-cpu"><span class="pc-icon">🤖</span><b>ضد البوت</b><small>اختر صعوبتك وجرّب حظك</small></button>
+        <button class="play-card" id="play-online"><span class="pc-icon">🌐</span><b>أونلاين</b><small>تحدّى لاعبين حقيقيين</small></button>
+        <button class="play-card" id="play-local"><span class="pc-icon">📱</span><b>بنفس الجهاز</b><small>٢-٤ لاعبين بالتناوب</small></button>
+      </div>
+      <!-- قسم الأونلاين -->
+      <div id="online-area" class="hidden">
+        <button id="btn-online-back" class="btn-ghost-choco small">← رجوع</button>
+        <div id="online-offline-msg" class="offline-banner hidden">🔌 الأونلاين يحتاج اتصال بالسيرفر</div>
+        <button id="btn-create-room" class="btn-royal wide">➕ إنشاء روم</button>
+        <div class="join-private-row">
+          <input id="private-code-input" maxlength="6" placeholder="كود روم خاص">
+          <button id="btn-join-private" class="btn-royal small">دخول 🔑</button>
+        </div>
+        <h3 class="section-label">الرومات العامة</h3>
+        <div id="public-rooms"><p class="empty-hint">لا توجد رومات حالياً.. أنشئ واحدة! ✨</p></div>
       </div>
     </div>
-    <div id="top-stats">
-      <span id="top-trophy" class="stat-pill" title="انتصارات">🏆 0</span>
-      <span id="top-coins" class="stat-pill coins" title="العملات">🪙 0</span>
+  </div>
+
+  <!-- المتجر الملكي -->
+  <div id="panel-shop" class="royal-overlay hidden">
+    <div class="candy-panel big-panel">
+      <button class="panel-close">✖</button>
+      <h2 class="panel-title">🏪 المتجر الملكي</h2>
+      <div id="shop-balance">🪙 <b id="shop-coins">0</b> &nbsp;•&nbsp; 💎 <b id="shop-gems">0</b></div>
+      <div id="shop-tabs">
+        <button class="shop-tab active" data-tab="boosters">💣 معززات</button>
+        <button class="shop-tab" data-tab="themes">🎨 اللوك</button>
+        <button class="shop-tab" data-tab="avatars">😎 أفاتارات</button>
+        <button class="shop-tab" data-tab="frames">🖼️ إطارات</button>
+        <button class="shop-tab" data-tab="coins">🪙 عملات</button>
+        <button class="shop-tab" data-tab="gems">💎 جواهر</button>
+      </div>
+      <div id="shop-items"></div>
     </div>
-  </header>
+  </div>
 
-  <!-- الصفحات الثلاث -->
-  <main id="pages">
+  <!-- قاعة الأبطال (المتصدرين) -->
+  <div id="panel-leaderboard" class="royal-overlay hidden">
+    <div class="candy-panel big-panel">
+      <button class="panel-close">✖</button>
+      <h2 class="panel-title">🏆 قائمة المتصدرين</h2>
+      <div class="lb-tabs">
+        <button class="shop-tab active" data-lbtab="global">🌍 عالمي</button>
+        <button class="shop-tab" data-lbtab="friends">👥 أصدقاء</button>
+      </div>
+      <div id="lb-list"><p class="empty-hint">... جاري التحميل</p></div>
+      <div id="lb-me" class="hidden"></div>
+    </div>
+  </div>
 
-    <!-- صفحة الأصدقاء (يمين) -->
-    <section id="page-friends" class="page">
-      <h2 class="page-title">👥 الأصدقاء</h2>
+  <!-- المهام اليومية -->
+  <div id="panel-missions" class="royal-overlay hidden">
+    <div class="candy-panel big-panel">
+      <button class="panel-close">✖</button>
+      <h2 class="panel-title">📜 المهام اليومية</h2>
+      <p class="hint">تتجدد المهام كل يوم ⏰</p>
+      <div id="missions-list"></div>
+    </div>
+  </div>
+
+  <!-- صندوق الهدية اليومية -->
+  <div id="panel-gift" class="royal-overlay hidden">
+    <div class="candy-panel">
+      <button class="panel-close">✖</button>
+      <h2 class="panel-title">🎁 الصندوق الملكي</h2>
+      <div id="gift-body"></div>
+    </div>
+  </div>
+
+  <!-- الإعدادات الملكية -->
+  <div id="panel-settings" class="royal-overlay hidden">
+    <div class="candy-panel big-panel">
+      <button class="panel-close">✖</button>
+      <h2 class="panel-title">⚙️ الإعدادات الملكية</h2>
+      <div class="settings-grid">
+        <div class="settings-box">
+          <h3>🔊 الصوت</h3>
+          <label class="toggle-row"><span>🎵 موسيقى الخلفية</span><input type="checkbox" id="set-music"></label>
+          <label class="toggle-row"><span>🎉 المؤثرات الصوتية</span><input type="checkbox" id="set-sfx" checked></label>
+        </div>
+        <div class="settings-box">
+          <h3>👤 الحساب</h3>
+          <div id="set-account-card">
+            <span id="set-avatar" class="chip-avatar big">🍬</span>
+            <b id="set-username">لاعب</b>
+            <small id="set-stats"></small>
+          </div>
+          <button id="btn-open-friends" class="btn-royal wide small">👥 الأصدقاء</button>
+          <button id="btn-logout" class="btn-ghost-choco wide small">🚪 تسجيل الخروج</button>
+        </div>
+        <div class="settings-box">
+          <h3>🔔 الإشعارات</h3>
+          <label class="toggle-row"><span>🎁 تنبيهات الهدايا</span><input type="checkbox" id="set-notif-gift" checked></label>
+          <label class="toggle-row"><span>🏆 تحديثات المتصدرين</span><input type="checkbox" id="set-notif-lb" checked></label>
+        </div>
+        <div class="settings-box">
+          <h3>📄 الدعم والشروط</h3>
+          <button class="btn-ghost-choco wide small" id="btn-support">📧 الاتصال بالدعم</button>
+          <button class="btn-ghost-choco wide small" id="btn-privacy">🍫 سياسة الخصوصية</button>
+          <button class="btn-ghost-choco wide small" id="btn-terms2">📜 شروط الخدمة</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- الأصدقاء -->
+  <div id="panel-friends" class="royal-overlay hidden">
+    <div class="candy-panel big-panel">
+      <button class="panel-close">✖</button>
+      <h2 class="panel-title">👥 الأصدقاء</h2>
       <div id="friends-offline-msg" class="offline-banner hidden">🔌 الأصدقاء والشات يحتاجون اتصال بالسيرفر</div>
       <div class="add-friend-row">
-        <input id="friend-code-input" maxlength="6" placeholder="كود الصديق (مثال: AB3CD9)">
-        <button id="btn-add-friend" class="btn btn-small">➕ إضافة</button>
+        <input id="friend-name-input" maxlength="16" placeholder="اسم المستخدم للصديق">
+        <button id="btn-add-friend" class="btn-royal small">➕ إضافة</button>
       </div>
       <div id="friend-requests-wrap" class="hidden">
         <h3 class="section-label">📩 طلبات الصداقة</h3>
         <div id="friend-requests"></div>
       </div>
       <h3 class="section-label">قائمة الأصدقاء</h3>
-      <div id="friends-list"><p class="empty-hint">ما عندك أصدقاء بعد.. أضف صديق بكوده! 🫶</p></div>
+      <div id="friends-list"><p class="empty-hint">أضف أصدقاءك باسم المستخدم! 🫶</p></div>
 
-      <!-- نافذة الشات -->
       <div id="chat-panel" class="hidden">
         <div id="chat-header">
           <button id="btn-chat-back" class="icon-btn">←</button>
-          <span id="chat-with-avatar" class="avatar-bubble small">🍬</span>
+          <span id="chat-with-avatar" class="chip-avatar">🍬</span>
           <span id="chat-with-name">صديق</span>
         </div>
         <div id="chat-messages"></div>
         <div id="chat-input-row">
           <input id="chat-input" maxlength="300" placeholder="اكتب رسالة...">
-          <button id="btn-chat-send" class="btn btn-small">إرسال 🚀</button>
+          <button id="btn-chat-send" class="btn-royal small">🚀</button>
         </div>
       </div>
-    </section>
-
-    <!-- صفحة اللعب (الوسط - الرئيسية) -->
-    <section id="page-play" class="page active">
-      <h1 id="game-logo">🍬 حرب الحلويات ⚔️</h1>
-      <p id="game-tagline">ادمج الحلويات.. ودمّر خصمك!</p>
-      <div id="mode-cards">
-        <button class="mode-card online" id="btn-mode-online">
-          <span class="mode-icon">🌐</span>
-          <span class="mode-name">أونلاين</span>
-          <span class="mode-desc">تحدّى لاعبين حقيقيين في رومات</span>
-        </button>
-        <button class="mode-card cpu" id="btn-mode-cpu">
-          <span class="mode-icon">🤖</span>
-          <span class="mode-name">ضد الكمبيوتر</span>
-          <span class="mode-desc">اختر صعوبتك وجرّب حظك</span>
-        </button>
-        <button class="mode-card local" id="btn-mode-local">
-          <span class="mode-icon">👨‍👩‍👧</span>
-          <span class="mode-name">محلي</span>
-          <span class="mode-desc">٢ - ٤ لاعبين على نفس الجهاز</span>
-        </button>
-      </div>
-
-      <!-- قسم الأونلاين: الرومات -->
-      <div id="online-section" class="hidden">
-        <div class="online-head">
-          <button id="btn-online-back" class="icon-btn">←</button>
-          <h2 class="page-title">🌐 اللعب أونلاين</h2>
-        </div>
-        <div id="online-offline-msg" class="offline-banner hidden">🔌 ما في اتصال بالسيرفر.. شغّل اللعبة بـ npm start</div>
-        <button id="btn-create-room" class="btn btn-wide btn-glow">➕ إنشاء روم</button>
-        <div class="join-private-row">
-          <input id="private-code-input" maxlength="6" placeholder="كود روم خاص">
-          <button id="btn-join-private" class="btn btn-small">دخول 🔑</button>
-        </div>
-        <h3 class="section-label">الرومات العامة</h3>
-        <div id="public-rooms"><p class="empty-hint">لا توجد رومات عامة حالياً.. أنشئ واحدة! ✨</p></div>
-      </div>
-    </section>
-
-    <!-- صفحة المتجر (يسار) -->
-    <section id="page-shop" class="page">
-      <h2 class="page-title">🛒 المتجر</h2>
-      <div id="shop-coins-banner">رصيدك: <span id="shop-coins">🪙 0</span></div>
-      <div id="shop-tabs">
-        <button class="shop-tab active" data-tab="boosters">💣 معززات</button>
-        <button class="shop-tab" data-tab="themes">🎨 ثيمات</button>
-        <button class="shop-tab" data-tab="avatars">😎 أفاتارات</button>
-        <button class="shop-tab" data-tab="coins">🪙 عملات</button>
-      </div>
-      <div id="shop-items"></div>
-    </section>
-  </main>
-
-  <!-- الشريط السفلي -->
-  <nav id="bottombar">
-    <button class="nav-btn" data-page="page-friends"><span class="nav-icon">👥</span>الأصدقاء<span id="nav-friends-badge" class="nav-badge hidden"></span></button>
-    <button class="nav-btn active main-nav" data-page="page-play"><span class="nav-icon">🎮</span>اللعب</button>
-    <button class="nav-btn" data-page="page-shop"><span class="nav-icon">🛒</span>المتجر</button>
-  </nav>
+    </div>
+  </div>
 </div>
 
 <!-- ============ شاشة المعركة ============ -->
@@ -132,30 +259,22 @@
     <div id="turn-banner">دور: <span id="turn-name">...</span></div>
     <div id="timer-wrap"><div id="timer-ring"><span id="timer-num">30</span></div></div>
   </div>
-
-  <!-- لوحات صحة اللاعبين -->
   <div id="players-hud"></div>
-
-  <!-- لوحة الحلويات -->
   <div id="board-wrap">
     <div id="board"></div>
     <div id="board-lock" class="hidden"></div>
   </div>
-
-  <!-- المعززات داخل المعركة -->
   <div id="battle-boosters"></div>
 
-  <!-- رسالة تمرير الدور للمحلي -->
   <div id="pass-device-overlay" class="overlay hidden">
     <div class="modal pass-modal">
-      <span id="pass-avatar" class="avatar-bubble big">🍬</span>
+      <span id="pass-avatar" class="chip-avatar big">🍬</span>
       <h2 id="pass-title">دور: لاعب</h2>
       <p>سلّم الجهاز للاعب التالي 📱</p>
-      <button id="btn-pass-ready" class="btn btn-glow">جاهز! 🚀</button>
+      <button id="btn-pass-ready" class="btn-royal">جاهز! 🚀</button>
     </div>
   </div>
 
-  <!-- شاشة النهاية -->
   <div id="battle-end-overlay" class="overlay hidden">
     <div class="modal end-modal">
       <div id="end-emoji">🏆</div>
@@ -163,48 +282,42 @@
       <p id="end-sub"></p>
       <p id="end-coins" class="coin-reward"></p>
       <div class="modal-actions">
-        <button id="btn-end-rematch" class="btn">🔄 إعادة</button>
-        <button id="btn-end-home" class="btn btn-glow">🏠 الرئيسية</button>
+        <button id="btn-end-rematch" class="btn-royal">🔄 إعادة</button>
+        <button id="btn-end-home" class="btn-ghost-choco">🏰 القصر</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ============ النوافذ المنبثقة ============ -->
+<!-- ============ النوافذ المنبثقة المشتركة ============ -->
 
-<!-- تعديل البروفايل -->
-<div id="modal-profile" class="overlay hidden">
-  <div class="modal">
-    <h2>✏️ بروفايلك</h2>
-    <label class="field-label">اسمك</label>
-    <input id="profile-name-input" maxlength="20" placeholder="اكتب اسمك">
-    <label class="field-label">الأفاتار</label>
-    <div id="avatar-picker"></div>
-    <div class="profile-stats-box">
-      <span>🏆 انتصارات: <b id="stat-wins">0</b></span>
-      <span>🎮 مباريات: <b id="stat-games">0</b></span>
-      <span>💥 أعلى ضرر: <b id="stat-damage">0</b></span>
+<div id="modal-terms" class="overlay hidden">
+  <div class="modal terms-modal">
+    <h2>📜 الشروط وسياسة الاستخدام</h2>
+    <div class="terms-text">
+      <p><b>١. الحساب:</b> اسم المستخدم هو الشيء الوحيد الذي يظهر للاعبين الآخرين في اللعبة والترتيب وقوائم الأصدقاء.</p>
+      <p><b>٢. خصوصية بياناتك:</b> بريدك الإلكتروني وتاريخ ميلادك ودولتك ومدينتك تُحفظ بأمان وتُستخدم <b>فقط</b> للتحقق من هويتك عند استرجاع حسابك في حال نسيان رمز الدخول أو اختراقه — <b>ولا تظهر أبداً</b> في ملفك الشخصي ولا لأي لاعب آخر.</p>
+      <p><b>٣. رمز الدخول:</b> يُخزن مشفراً ولا يمكن لأحد الاطلاع عليه. لا تشاركه مع أحد.</p>
+      <p><b>٤. الاسترجاع:</b> لاسترجاع حسابك يجب إدخال نفس البيانات المسجلة بالضبط (البريد، تاريخ الميلاد، الدولة والمدينة).</p>
+      <p><b>٥. الاستخدام العادل:</b> يُمنع انتحال أسماء الآخرين أو استخدام أسماء مسيئة، ويحق لنا إيقاف أي حساب مخالف.</p>
+      <p><b>٦. العملات والجواهر:</b> عملات اللعبة افتراضية للترفيه فقط وليس لها قيمة مالية حقيقية.</p>
     </div>
-    <div class="modal-actions">
-      <button id="btn-profile-save" class="btn btn-glow">حفظ ✅</button>
-    </div>
+    <button class="btn-royal modal-close">فهمت وأوافق ✅</button>
   </div>
 </div>
 
-<!-- اختيار صعوبة الكمبيوتر -->
 <div id="modal-difficulty" class="overlay hidden">
   <div class="modal">
     <h2>🤖 اختر الصعوبة</h2>
     <div class="choice-list">
-      <button class="choice-btn" data-diff="easy">😊 سهل <small>للمبتدئين.. الكمبيوتر يغفل</small></button>
+      <button class="choice-btn" data-diff="easy">😊 سهل <small>للمبتدئين.. البوت يغفل</small></button>
       <button class="choice-btn" data-diff="medium">😐 متوسط <small>يدور على دمج ٤ ويحرجك</small></button>
       <button class="choice-btn" data-diff="hard">😈 صعب <small>يحسب كل حركة.. حظ موفق!</small></button>
     </div>
-    <button class="btn btn-ghost modal-close">إلغاء</button>
+    <button class="btn-ghost-choco modal-close">إلغاء</button>
   </div>
 </div>
 
-<!-- اختيار الطور -->
 <div id="modal-mode" class="overlay hidden">
   <div class="modal">
     <h2>⚔️ اختر الطور</h2>
@@ -213,24 +326,22 @@
       <button class="choice-btn" data-gamemode="blitz">⚡ البرق <small>١٥ ثانية فقط! • ٩٠ صحة • سرعة جنونية</small></button>
       <button class="choice-btn" data-gamemode="sudden">💀 الموت المفاجئ <small>طبقة واحدة ٤٠ • دمج ٥+ بضرر مضاعف</small></button>
     </div>
-    <button class="btn btn-ghost modal-close">إلغاء</button>
+    <button class="btn-ghost-choco modal-close">إلغاء</button>
   </div>
 </div>
 
-<!-- عدد اللاعبين المحلي -->
 <div id="modal-local" class="overlay hidden">
   <div class="modal">
-    <h2>👨‍👩‍👧 كم لاعب؟</h2>
+    <h2>📱 كم لاعب؟</h2>
     <div class="choice-row">
       <button class="choice-btn square" data-count="2">٢</button>
       <button class="choice-btn square" data-count="3">٣</button>
       <button class="choice-btn square" data-count="4">٤</button>
     </div>
-    <button class="btn btn-ghost modal-close">إلغاء</button>
+    <button class="btn-ghost-choco modal-close">إلغاء</button>
   </div>
 </div>
 
-<!-- إنشاء روم -->
 <div id="modal-create-room" class="overlay hidden">
   <div class="modal">
     <h2>➕ إنشاء روم</h2>
@@ -248,13 +359,12 @@
       <button class="choice-btn toggle" data-roommode="sudden">💀 مفاجئ</button>
     </div>
     <div class="modal-actions">
-      <button id="btn-room-create-confirm" class="btn btn-glow">إنشاء 🚀</button>
-      <button class="btn btn-ghost modal-close">إلغاء</button>
+      <button id="btn-room-create-confirm" class="btn-royal">إنشاء 🚀</button>
+      <button class="btn-ghost-choco modal-close">إلغاء</button>
     </div>
   </div>
 </div>
 
-<!-- لوبي الروم (انتظار الخصم) -->
 <div id="modal-room-lobby" class="overlay hidden">
   <div class="modal">
     <h2 id="lobby-room-name">روم</h2>
@@ -262,16 +372,16 @@
     <p class="hint">شارك الكود مع صديقك للروم الخاص 🔑</p>
     <div id="lobby-players"></div>
     <div class="modal-actions">
-      <button id="btn-lobby-start" class="btn btn-glow hidden">ابدأ المعركة ⚔️</button>
-      <button id="btn-lobby-leave" class="btn btn-ghost">خروج</button>
+      <button id="btn-lobby-start" class="btn-royal hidden">ابدأ المعركة ⚔️</button>
+      <button id="btn-lobby-leave" class="btn-ghost-choco">خروج</button>
     </div>
   </div>
 </div>
 
-<!-- إشعارات Toast -->
 <div id="toast-wrap"></div>
 
 <script src="/socket.io/socket.io.js"></script>
+<script src="js/geo.js"></script>
 <script src="js/sounds.js"></script>
 <script src="js/profile.js"></script>
 <script src="js/shop.js"></script>
@@ -281,6 +391,10 @@
 <script src="js/battle.js"></script>
 <script src="js/online.js"></script>
 <script src="js/friends.js"></script>
+<script src="js/leaderboard.js"></script>
+<script src="js/missions.js"></script>
+<script src="js/castle.js"></script>
+<script src="js/auth.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
