@@ -1,0 +1,1238 @@
+/* ============ حرب الحلويات — تصميم مبني بالكود بالكامل ============ */
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --choco-dark: #3d1f0e;
+  --choco: #4e2812;
+  --choco-light: #6b3a1c;
+  --gold: #ffd166;
+  --gold-deep: #e6a417;
+  --cream: #fff3e0;
+  --pink: #ff5d9e;
+  --candy-red: #e63956;
+  --green: #4ade80;
+  --text: #fff7ea;
+}
+
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+  color: var(--text);
+  background: #2a1206;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+input, select, button { font-family: inherit; }
+.hidden { display: none !important; }
+
+.screen { position: fixed; inset: 0; display: none; flex-direction: column; z-index: 1; }
+.screen.active { display: flex; }
+
+/* ================================================================
+   مشهد أرض الحلويات (شاشة الدخول) — مرسوم بالكود
+   ================================================================ */
+.candy-scenery {
+  position: absolute; inset: 0; overflow: hidden;
+  background: linear-gradient(180deg, #8ec9f5 0%, #c9b6f2 30%, #f6b8dd 55%, #ffd9c4 72%, #a8642e 78%, #6b3a1c 100%);
+  transition: filter 1s ease;
+}
+.candy-scenery.alt { filter: hue-rotate(28deg) saturate(1.12); }
+
+.sc-sun {
+  position: absolute; top: 6%; inset-inline-start: 12%;
+  width: clamp(70px, 12vmin, 130px); height: clamp(70px, 12vmin, 130px);
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff8d9 20%, #ffe27a 55%, rgba(255, 216, 110, 0));
+  box-shadow: 0 0 70px 30px rgba(255, 226, 122, 0.5);
+  animation: sunPulse 6s ease-in-out infinite alternate;
+  transition: inset-inline-start 1s ease;
+}
+.candy-scenery.alt .sc-sun { inset-inline-start: 70%; }
+@keyframes sunPulse { to { transform: scale(1.08); } }
+
+.sc-clouds span {
+  position: absolute; font-size: clamp(30px, 6vmin, 60px); opacity: 0.9;
+  filter: drop-shadow(0 6px 10px rgba(120, 80, 160, 0.25));
+  animation: cloudDrift linear infinite;
+}
+.sc-clouds span:nth-child(1) { top: 8%;  animation-duration: 60s; }
+.sc-clouds span:nth-child(2) { top: 18%; animation-duration: 85s; animation-delay: -30s; font-size: clamp(22px, 4.5vmin, 44px); }
+.sc-clouds span:nth-child(3) { top: 4%;  animation-duration: 75s; animation-delay: -55s; font-size: clamp(26px, 5vmin, 50px); }
+@keyframes cloudDrift { from { left: -12%; } to { left: 105%; } }
+
+/* قصر الحلوى البعيد */
+.sc-castle {
+  position: absolute; bottom: 30%; inset-inline-start: 50%; transform: translateX(50%);
+  width: clamp(150px, 30vmin, 300px); height: clamp(110px, 22vmin, 220px);
+  filter: drop-shadow(0 10px 24px rgba(90, 30, 90, 0.35));
+}
+.sc-castle .tower {
+  position: absolute; bottom: 18%;
+  width: 22%; height: 74%;
+  background: repeating-linear-gradient(45deg, #ffd9e8 0 8px, #fff 8px 16px, #ffc4dd 16px 24px);
+  border: 2px solid #e8a9c6; border-bottom: none;
+  border-radius: 12px 12px 0 0;
+}
+.sc-castle .tower::before {
+  content: ''; position: absolute; top: -26%; left: -14%; right: -14%; height: 30%;
+  background: linear-gradient(180deg, #a5586des, #8e4a5e);
+  background: linear-gradient(180deg, #b45a7b, #8e3f5f);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+.sc-castle .tower .flag {
+  position: absolute; top: -42%; left: 50%; transform: translateX(-50%);
+  font-size: clamp(11px, 2vmin, 20px);
+  animation: flagWave 2.4s ease-in-out infinite;
+}
+@keyframes flagWave { 50% { transform: translateX(-50%) rotate(8deg); } }
+.sc-castle .t1 { inset-inline-start: 2%; height: 60%; }
+.sc-castle .t2 { inset-inline-start: 39%; height: 82%; z-index: 2; }
+.sc-castle .t3 { inset-inline-end: 2%; height: 60%; }
+.sc-castle .castle-body {
+  position: absolute; bottom: 0; inset-inline: 8%; height: 42%;
+  background: linear-gradient(180deg, #f7e0c8, #e8c19b);
+  border: 2px solid #cf9a68; border-bottom: none;
+  border-radius: 14px 14px 0 0;
+  box-shadow: inset 0 6px 12px rgba(255, 255, 255, 0.5);
+}
+.sc-castle .castle-body::before {
+  content: ''; position: absolute; top: -14px; left: 0; right: 0; height: 16px;
+  background: radial-gradient(circle at 8px 2px, #fff 7px, transparent 8px) 0 0 / 22px 16px repeat-x;
+}
+.sc-castle .gate {
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 26%; height: 70%;
+  background: linear-gradient(180deg, #7c4a24, #5a3315);
+  border-radius: 50px 50px 0 0;
+  border: 2px solid #4a2812; border-bottom: none;
+}
+
+/* تلال الحلوى */
+.sc-hill {
+  position: absolute; border-radius: 50% 50% 0 0;
+}
+.sc-hill.h1 {
+  bottom: 20%; inset-inline-start: -12%; width: 55%; height: 26%;
+  background: linear-gradient(180deg, #ff9fce, #e864a8);
+  box-shadow: inset 0 14px 24px rgba(255, 255, 255, 0.45);
+}
+.sc-hill.h1::before {
+  content: ''; position: absolute; top: -4%; left: 12%; right: 12%; height: 38%;
+  background: radial-gradient(circle at 14px 4px, #fff6fb 12px, transparent 13px) 0 0 / 40px 100% repeat-x;
+  opacity: 0.9;
+}
+.sc-hill.h2 {
+  bottom: 20%; inset-inline-end: -14%; width: 60%; height: 30%;
+  background: linear-gradient(180deg, #9be8b0, #4dbb72);
+  box-shadow: inset 0 14px 24px rgba(255, 255, 255, 0.4);
+}
+.sc-hill.h2::before {
+  content: ''; position: absolute; top: -3%; left: 10%; right: 10%; height: 34%;
+  background: radial-gradient(circle at 16px 4px, #ecfff2 13px, transparent 14px) 0 0 / 46px 100% repeat-x;
+  opacity: 0.85;
+}
+.sc-hill.h3 {
+  bottom: 16%; inset-inline-start: 28%; width: 50%; height: 22%;
+  background: linear-gradient(180deg, #ffe08a, #eab545);
+  box-shadow: inset 0 12px 20px rgba(255, 255, 255, 0.5);
+  z-index: 1;
+}
+
+/* نهر الشوكولاتة */
+.sc-river {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 24%; z-index: 2;
+  background: linear-gradient(180deg, #8a4a1d 0%, #6b3a1c 40%, #4a2410 100%);
+}
+.sc-river::before {
+  content: ''; position: absolute; top: -14px; left: 0; right: 0; height: 30px;
+  background: radial-gradient(circle at 30px 16px, #8a4a1d 16px, transparent 17px) 0 0 / 74px 30px repeat-x;
+}
+.sc-river::after {
+  content: ''; position: absolute; inset: 20% 0 0;
+  background:
+    radial-gradient(ellipse 60px 10px at 20% 30%, rgba(255, 214, 150, 0.25), transparent),
+    radial-gradient(ellipse 80px 12px at 65% 60%, rgba(255, 214, 150, 0.18), transparent),
+    radial-gradient(ellipse 50px 9px at 85% 25%, rgba(255, 214, 150, 0.22), transparent);
+  animation: riverShine 5s ease-in-out infinite alternate;
+}
+@keyframes riverShine { to { transform: translateX(-30px); opacity: 0.7; } }
+
+/* مصاصات عملاقة */
+.sc-lolli { position: absolute; z-index: 3; }
+.sc-lolli i {
+  display: block;
+  width: clamp(46px, 9vmin, 90px); height: clamp(46px, 9vmin, 90px);
+  border-radius: 50%;
+  background: repeating-conic-gradient(#ff5d9e 0 20deg, #fff 20deg 40deg);
+  border: 4px solid #fff;
+  box-shadow: 0 8px 20px rgba(160, 40, 90, 0.35), inset 0 0 0 6px rgba(255, 93, 158, 0.25);
+  animation: lolliSpin 26s linear infinite;
+}
+.sc-lolli::after {
+  content: ''; position: absolute; top: 92%; left: 50%; transform: translateX(-50%);
+  width: 8%; min-width: 5px; height: 110%;
+  background: linear-gradient(180deg, #fff, #ffd9e8);
+  border-radius: 99px;
+}
+@keyframes lolliSpin { to { transform: rotate(360deg); } }
+.sc-lolli.l1 { bottom: 26%; inset-inline-start: 7%; }
+.sc-lolli.l2 { bottom: 24%; inset-inline-end: 8%; }
+.sc-lolli.l2 i { background: repeating-conic-gradient(#4cd9ed 0 20deg, #fff 20deg 40deg); box-shadow: 0 8px 20px rgba(20, 90, 120, 0.3), inset 0 0 0 6px rgba(76, 217, 237, 0.25); }
+
+/* حلويات متناثرة على النهر */
+.sc-candies span {
+  position: absolute; bottom: 4%; font-size: clamp(16px, 3.4vmin, 32px); z-index: 3;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+  animation: candyBob 3s ease-in-out infinite alternate;
+}
+.sc-candies span:nth-child(1) { inset-inline-start: 12%; }
+.sc-candies span:nth-child(2) { inset-inline-start: 30%; bottom: 10%; animation-delay: 0.4s; }
+.sc-candies span:nth-child(3) { inset-inline-start: 48%; bottom: 3%; animation-delay: 0.9s; }
+.sc-candies span:nth-child(4) { inset-inline-start: 62%; bottom: 12%; animation-delay: 1.3s; }
+.sc-candies span:nth-child(5) { inset-inline-start: 78%; bottom: 6%; animation-delay: 0.6s; }
+.sc-candies span:nth-child(6) { inset-inline-start: 90%; bottom: 13%; animation-delay: 1.7s; }
+@keyframes candyBob { to { transform: translateY(-7px) rotate(6deg); } }
+
+/* ================================================================
+   لوحة الشوكولاتة الملكية (مشتركة)
+   ================================================================ */
+.candy-panel {
+  position: relative;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(255, 255, 255, 0.10), transparent 45%),
+    linear-gradient(165deg, #5a2d14 0%, #46220e 50%, #38190a 100%);
+  border-radius: 26px;
+  box-shadow:
+    0 0 0 4px #b97722,
+    0 0 0 6px #7a4a12,
+    0 0 26px rgba(255, 190, 80, 0.35),
+    0 24px 60px rgba(0, 0, 0, 0.65),
+    inset 0 2px 12px rgba(255, 220, 160, 0.18);
+  padding: 22px 20px;
+}
+.candy-panel::before {
+  content: '';
+  position: absolute; top: -4px; left: 24px; right: 24px; height: 8px;
+  border-radius: 8px;
+  background: repeating-linear-gradient(45deg, #ff5d9e 0 10px, #fff3e0 10px 20px, #4cd9ed 20px 30px, #fff3e0 30px 40px);
+  opacity: 0.9;
+}
+.panel-title {
+  text-align: center; font-size: 22px; font-weight: 900; margin-bottom: 12px;
+  color: var(--gold);
+  text-shadow: 0 2px 0 #7a4a12, 0 4px 14px rgba(0,0,0,0.6);
+}
+.panel-close {
+  position: absolute; top: 10px; inset-inline-start: 10px; z-index: 5;
+  width: 38px; height: 38px; border-radius: 12px; border: 2px solid #b97722;
+  background: linear-gradient(160deg, #c04545, #8e2f2f);
+  color: #fff; font-size: 16px; font-weight: 900; cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+.panel-close:active { transform: scale(0.92); }
+
+/* ============ الأزرار ============ */
+.btn-royal {
+  display: inline-block;
+  background: linear-gradient(180deg, #ff7aa8 0%, #e63956 45%, #c21f3f 100%);
+  border: 3px solid #ffd9a0;
+  outline: 2px solid #8e2f2f;
+  border-radius: 16px;
+  color: #fff; font-weight: 900; font-size: 16px;
+  padding: 12px 26px; cursor: pointer;
+  text-shadow: 0 2px 3px rgba(0,0,0,0.45);
+  box-shadow: 0 6px 0 #7d1b32, 0 12px 24px rgba(0,0,0,0.45), inset 0 3px 6px rgba(255,255,255,0.4);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.btn-royal:hover { transform: translateY(-2px); }
+.btn-royal:active { transform: translateY(3px); box-shadow: 0 2px 0 #7d1b32, 0 6px 14px rgba(0,0,0,0.4); }
+.btn-royal.wide { display: block; width: 100%; }
+.btn-royal.small { padding: 8px 16px; font-size: 14px; box-shadow: 0 4px 0 #7d1b32, 0 8px 16px rgba(0,0,0,0.4); }
+.btn-royal:disabled { filter: grayscale(0.7); opacity: 0.6; cursor: not-allowed; }
+
+.btn-ghost-choco {
+  background: linear-gradient(180deg, #6b3a1c, #4e2812);
+  border: 2px solid #b97722;
+  border-radius: 14px; color: var(--cream);
+  font-weight: 700; font-size: 14px; padding: 10px 20px; cursor: pointer;
+  box-shadow: 0 4px 0 #2e1608, 0 8px 16px rgba(0,0,0,0.35);
+}
+.btn-ghost-choco:active { transform: translateY(2px); box-shadow: 0 2px 0 #2e1608; }
+.btn-ghost-choco.wide { display: block; width: 100%; margin-top: 8px; }
+.btn-ghost-choco.small { font-size: 13px; padding: 8px 14px; }
+
+.icon-btn {
+  background: linear-gradient(180deg, #6b3a1c, #4e2812);
+  border: 2px solid #b97722; color: var(--text);
+  width: 38px; height: 38px; border-radius: 12px; font-size: 17px; cursor: pointer;
+}
+.icon-btn.danger { background: linear-gradient(180deg, #c04545, #8e2f2f); }
+
+/* ============ الحقول ============ */
+input, select {
+  background: var(--cream);
+  border: 3px solid #e2b46a;
+  border-radius: 999px;
+  padding: 10px 18px;
+  color: #5a2d14; font-size: 16px; font-weight: 700; outline: none; /* 16px يمنع زوم iOS */
+  width: 100%;
+  box-shadow: inset 0 3px 6px rgba(122, 74, 18, 0.25);
+}
+input:focus, select:focus { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(255, 93, 158, 0.35); }
+input::placeholder { color: #b08a5e; font-weight: 600; }
+select { appearance: none; cursor: pointer; }
+select:disabled { opacity: 0.55; }
+input[type="date"] { direction: ltr; text-align: center; }
+input[type="password"], #login-code, #reg-code, #rec-newcode { letter-spacing: 6px; text-align: center; direction: ltr; }
+
+.field-label { display: block; font-size: 13px; font-weight: 900; margin: 10px 2px 5px; color: var(--gold); text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+.field-label small { color: #ffcf9e; font-weight: 600; }
+.section-label { font-size: 14px; margin: 16px 0 8px; font-weight: 900; color: var(--gold); }
+.empty-hint { opacity: 0.65; font-size: 14px; text-align: center; padding: 18px 0; }
+.hint { font-size: 12px; opacity: 0.75; margin: 6px 0; text-align: center; }
+
+/* ============ شاشة التسجيل ============ */
+#screen-auth { align-items: center; justify-content: center; }
+#auth-content {
+  position: relative; z-index: 2; width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: calc(10px + env(safe-area-inset-top)) 12px calc(10px + env(safe-area-inset-bottom));
+  overflow-y: auto;
+}
+#auth-logo { text-align: center; margin-bottom: 10px; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.4)); }
+#auth-logo h1 {
+  font-size: clamp(26px, 6vw, 46px); font-weight: 900;
+  background: linear-gradient(180deg, #fff 5%, var(--gold) 40%, #ff8f6b 75%, var(--candy-red));
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+#auth-logo p { color: #7a3a56; font-weight: 900; text-shadow: 0 1px 0 rgba(255,255,255,0.5); }
+
+.auth-panel {
+  width: min(94vw, 430px);
+  max-height: 78vh; overflow-y: auto;
+  animation: panelPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes panelPop { from { opacity: 0; transform: scale(0.82) translateY(26px); } }
+.auth-panel h2 { text-align: center; color: var(--gold); font-size: 20px; margin-bottom: 6px; text-shadow: 0 2px 0 #7a4a12; }
+.auth-panel .btn-royal { display: block; width: 100%; margin-top: 16px; }
+#auth-recover input, #auth-recover select { margin-top: 8px; }
+
+.auth-links { display: flex; justify-content: space-between; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.auth-links a { color: #ffd9a0; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: underline; }
+.auth-links a:hover { color: #fff; }
+.auth-status { text-align: center; font-size: 12px; margin-top: 10px; opacity: 0.85; }
+.auth-status.online { color: var(--green); }
+.auth-status.offline { color: #ff9a9a; }
+#btn-guest { display: block; width: 100%; margin-top: 10px; }
+
+.geo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.terms-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.terms-row input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--candy-red); box-shadow: none; }
+.terms-row a { color: var(--gold); text-decoration: underline; cursor: pointer; }
+
+/* انميشن دخول القصر */
+#castle-entry { position: fixed; inset: 0; z-index: 400; pointer-events: none; }
+#castle-entry .entry-flash {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 45%, rgba(255, 230, 160, 0.95), rgba(90, 45, 20, 0.98) 70%);
+  animation: entryFlash 1.5s ease forwards;
+}
+@keyframes entryFlash {
+  0% { opacity: 0; transform: scale(0.4); border-radius: 50%; }
+  35% { opacity: 1; transform: scale(1.05); border-radius: 0; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.auth-zooming { animation: authZoom 1s ease forwards !important; }
+@keyframes authZoom { to { transform: scale(1.6); filter: brightness(2) blur(3px); } }
+
+/* ================================================================
+   قاعة القصر (الصفحة الرئيسية) — مرسومة بالكود، تتكيف مع أي شاشة
+   ================================================================ */
+#screen-castle {
+  background:
+    radial-gradient(130% 70% at 50% 0%, #8a5a30 0%, #6e4120 38%, #4a2410 72%, #331508 100%);
+}
+#castle-hall { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+
+/* كريمة متدلية أعلى القاعة */
+.hall-frosting {
+  position: absolute; top: 0; left: 0; right: 0; height: clamp(26px, 5vh, 46px);
+  background: linear-gradient(180deg, #fff7ec, #f5e2c8);
+  display: flex; z-index: 1;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+}
+.hall-frosting i {
+  flex: 1;
+  background: radial-gradient(circle at 50% 0%, #f5e2c8 0%, #f5e2c8 60%, transparent 61%);
+  transform: translateY(96%);
+  height: 90%;
+  border-radius: 0 0 50% 50%;
+  background: linear-gradient(180deg, #f5e2c8, #ecd2ae);
+}
+.hall-frosting i:nth-child(odd) { height: 65%; }
+
+/* أعمدة حلوى على الجانبين */
+.hall-pillar {
+  position: absolute; top: 0; bottom: 0; width: clamp(16px, 3vw, 34px);
+  background: repeating-linear-gradient(45deg, #e2556e 0 14px, #fff3e6 14px 28px);
+  box-shadow: inset -6px 0 12px rgba(0,0,0,0.25), 0 0 18px rgba(0,0,0,0.35);
+  opacity: 0.92;
+}
+.hall-pillar.pr { inset-inline-end: 0; }
+.hall-pillar.pl { inset-inline-start: 0; }
+
+/* أرضية شوكولاتة بلاطية */
+.hall-floor {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 26%;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.25) 100%),
+    repeating-linear-gradient(90deg, #4a2410 0 60px, #3d1d0c 60px 120px),
+    linear-gradient(180deg, #4a2410, #331508);
+  border-top: 3px solid #7a4a12;
+  box-shadow: inset 0 10px 24px rgba(0,0,0,0.4);
+}
+.hall-floor::before {
+  content: '🍬 🍩 🍭 🍫 🧁 🍪 🍬 🍭';
+  position: absolute; bottom: 6%; left: 0; right: 0;
+  text-align: center; letter-spacing: clamp(14px, 6vw, 60px);
+  font-size: clamp(11px, 2vmin, 18px); opacity: 0.35;
+}
+.hall-glow {
+  position: absolute; top: 18%; left: 50%; transform: translateX(-50%);
+  width: 70%; height: 45%;
+  background: radial-gradient(ellipse, rgba(255, 209, 102, 0.20), transparent 65%);
+  animation: sunPulse 5s ease-in-out infinite alternate;
+}
+
+/* الشريط العلوي */
+#castle-topbar {
+  position: relative; z-index: 20;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: calc(8px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) 4px calc(10px + env(safe-area-inset-left));
+  gap: 8px;
+}
+.royal-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(180deg, #5a2d14, #3d1f0e);
+  border: 2px solid #d9a441;
+  border-radius: 999px; padding: 5px 12px;
+  color: var(--text); font-weight: 900; font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.55), inset 0 2px 4px rgba(255,220,160,0.25);
+  cursor: default;
+}
+button.royal-chip { cursor: pointer; }
+button.royal-chip:active { transform: scale(0.95); }
+.chip-avatar {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; font-size: 20px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffb46b, #c96a1e);
+  border: 2px solid #ffd9a0;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+}
+.chip-avatar.big { width: 64px; height: 64px; font-size: 36px; }
+.chip-meta { display: flex; flex-direction: column; line-height: 1.15; }
+.chip-meta small { font-size: 11px; color: var(--gold); }
+.topbar-currencies { display: flex; gap: 8px; }
+.royal-chip .plus {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: linear-gradient(180deg, #7ee787, #2ea043);
+  border: 1.5px solid #d7ffdd; color: #fff; font-weight: 900; font-size: 14px;
+}
+.coins-chip b { color: var(--gold); }
+.gems-chip b { color: #ff8fd6; }
+.coin-pop { animation: coinPop 0.5s ease; }
+@keyframes coinPop { 50% { transform: scale(1.25); } }
+
+/* محتوى القصر: عمود يملأ الشاشة بدون أي تمرير */
+#castle-content {
+  position: relative; z-index: 10;
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column;
+  padding: 0 clamp(20px, 4vw, 46px) calc(8px + env(safe-area-inset-bottom));
+}
+#scene-logo { text-align: center; flex-shrink: 0; padding: 2px 0 6px; }
+#scene-logo h1 {
+  font-size: clamp(20px, 4.6vmin, 42px); font-weight: 900;
+  background: linear-gradient(180deg, #fff 5%, var(--gold) 40%, #ff8f6b 75%, var(--candy-red));
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.45));
+}
+#scene-logo p { font-size: clamp(10px, 1.8vmin, 15px); color: #ffd9a0; font-weight: 700; opacity: 0.9; }
+
+/* شبكة الأماكن: سطح المكتب 3 أعمدة، وكل شيء يتقلص ليدخل الشاشة */
+#scene-grid {
+  flex: 1; min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1.35fr 1fr;
+  grid-template-rows: minmax(0, 1.55fr) minmax(0, 1fr);
+  grid-template-areas:
+    "shop throne   lb"
+    "gift missions settings";
+  gap: clamp(8px, 1.6vmin, 16px);
+  align-items: stretch;
+}
+.pl-shop { grid-area: shop; }
+.pl-lb { grid-area: lb; }
+.pl-gift { grid-area: gift; }
+.pl-settings { grid-area: settings; }
+.throne-zone { grid-area: throne; }
+.pl-missions { grid-area: missions; }
+
+/* بطاقة مكان (محل) */
+.place {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: clamp(3px, 0.8vmin, 8px);
+  min-height: 0; min-width: 0; overflow: hidden;
+  background:
+    radial-gradient(110% 80% at 50% 0%, rgba(255, 235, 200, 0.12), transparent 50%),
+    linear-gradient(165deg, #5a2d14, #40200d);
+  border: none; border-radius: clamp(14px, 2.4vmin, 22px);
+  box-shadow: 0 0 0 3px #b97722, 0 0 0 5px #7a4a12, 0 10px 26px rgba(0,0,0,0.45), inset 0 2px 10px rgba(255,220,160,0.14);
+  color: var(--text); cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+  padding: clamp(6px, 1.4vmin, 14px);
+}
+.place:hover { transform: translateY(-4px); box-shadow: 0 0 0 3px var(--gold), 0 0 0 5px #7a4a12, 0 0 26px rgba(255, 209, 102, 0.5), 0 14px 30px rgba(0,0,0,0.5); }
+.place:active { transform: scale(0.96); }
+.place-sign {
+  background: linear-gradient(180deg, #ffd166, #e6a417);
+  color: #5a2308; font-weight: 900; font-size: clamp(11px, 1.9vmin, 17px);
+  border: 2px solid #fff3d0; border-radius: 999px;
+  padding: clamp(2px, 0.5vmin, 5px) clamp(8px, 1.6vmin, 16px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+  white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+}
+.place-hint { font-size: clamp(9px, 1.5vmin, 13px); opacity: 0.7; font-weight: 700; white-space: nowrap; }
+.place-art { display: flex; align-items: center; justify-content: center; min-height: 0; }
+
+/* رف المتجر */
+.shop-shelf {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: clamp(3px, 0.7vmin, 7px);
+  background: rgba(0,0,0,0.28); border: 2px solid #7a4a12; border-radius: 12px;
+  padding: clamp(4px, 1vmin, 10px);
+}
+.shop-shelf i {
+  font-style: normal; font-size: clamp(14px, 2.6vmin, 26px);
+  background: linear-gradient(180deg, rgba(255,240,210,0.14), rgba(255,240,210,0.05));
+  border: 1.5px solid #7a4a12; border-radius: 8px;
+  padding: clamp(1px, 0.4vmin, 5px) clamp(4px, 0.8vmin, 8px);
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.4));
+}
+
+/* لفافة المهام */
+.scroll-art {
+  flex-direction: column; gap: clamp(3px, 0.8vmin, 7px);
+  background: linear-gradient(180deg, #fff3e0, #f3ddb8);
+  border-radius: 10px;
+  padding: clamp(6px, 1.4vmin, 14px) clamp(10px, 2vmin, 22px);
+  box-shadow: inset 0 0 10px rgba(122, 74, 18, 0.35), 0 4px 10px rgba(0,0,0,0.35);
+  position: relative;
+}
+.scroll-art::before, .scroll-art::after {
+  content: ''; position: absolute; left: -4%; right: -4%; height: 26%;
+  background: linear-gradient(180deg, #e8c89a, #cfa060);
+  border-radius: 99px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+.scroll-art::before { top: -10%; }
+.scroll-art::after { bottom: -10%; }
+.scroll-line { width: clamp(40px, 7vmin, 90px); height: clamp(3px, 0.6vmin, 6px); background: #b98a4e; border-radius: 99px; opacity: 0.7; }
+.scroll-line:nth-child(2) { width: clamp(30px, 5.4vmin, 70px); }
+
+/* معاينة المتصدرين الحية */
+.lb-preview {
+  flex-direction: column; align-items: stretch; gap: clamp(2px, 0.6vmin, 6px);
+  width: 88%;
+}
+.lb-preview i {
+  font-style: normal; font-size: clamp(10px, 1.8vmin, 15px); font-weight: 900;
+  background: linear-gradient(180deg, rgba(255,240,210,0.12), rgba(255,240,210,0.04));
+  border: 1.5px solid #7a4a12; border-radius: 999px;
+  padding: clamp(1px, 0.4vmin, 4px) clamp(6px, 1.2vmin, 12px);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-align: start;
+}
+.lb-preview i:first-child { border-color: var(--gold); color: var(--gold); }
+
+/* الصندوق */
+.chest-art { font-size: clamp(26px, 5.6vmin, 60px); filter: drop-shadow(0 6px 10px rgba(0,0,0,0.45)); animation: giftWiggle 2.2s ease-in-out infinite; }
+
+/* آلة الإعدادات */
+.machine-art {
+  gap: clamp(3px, 0.7vmin, 7px);
+  background: linear-gradient(180deg, #6b3a1c, #4a2410);
+  border: 2px solid #b97722; border-radius: 12px;
+  padding: clamp(5px, 1.2vmin, 12px) clamp(8px, 1.8vmin, 18px);
+  font-size: clamp(16px, 3vmin, 30px);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
+}
+.machine-art i {
+  width: clamp(8px, 1.6vmin, 16px); height: clamp(8px, 1.6vmin, 16px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ff8fd6, #c2418f);
+  border: 1.5px solid #ffd7ef;
+  animation: knobBlink 2s ease-in-out infinite alternate;
+}
+.machine-art i:nth-child(2) { background: radial-gradient(circle at 35% 30%, #7ee787, #2ea043); border-color: #d7ffdd; animation-delay: 0.5s; }
+.machine-art i:nth-child(3) { background: radial-gradient(circle at 35% 30%, #ffd166, #e6a417); border-color: #fff3d0; animation-delay: 1s; }
+@keyframes knobBlink { to { filter: brightness(1.6); } }
+
+/* منطقة العرش */
+.throne-zone {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  min-height: 0; min-width: 0;
+  gap: clamp(6px, 1.4vmin, 14px);
+  padding-bottom: clamp(2px, 1vmin, 10px);
+}
+.throne-back {
+  position: absolute; inset: 7% 8% clamp(30px, 8vmin, 70px);
+  background: linear-gradient(180deg, #b8791f 0%, #8a5413 55%, #5f3a0e 100%);
+  border-radius: 46% 46% 18px 18px / 60% 60% 18px 18px;
+  box-shadow: 0 0 0 3px #d9a441, 0 0 40px rgba(255, 190, 80, 0.35), inset 0 8px 24px rgba(255, 230, 170, 0.35), inset 0 -12px 24px rgba(0,0,0,0.35);
+}
+.throne-back::before {
+  content: ''; position: absolute; inset: 12% 16% 14%;
+  background: linear-gradient(180deg, #c98a2b, #96601a);
+  border-radius: 46% 46% 14px 14px / 58% 58% 14px 14px;
+  box-shadow: inset 0 6px 18px rgba(255, 235, 190, 0.4), inset 0 -8px 16px rgba(0,0,0,0.3);
+}
+.throne-gem {
+  position: absolute; top: 2%; left: 50%; transform: translateX(-50%);
+  font-size: clamp(14px, 2.6vmin, 26px);
+  filter: drop-shadow(0 0 8px rgba(255, 100, 180, 0.8));
+  animation: knobBlink 1.6s ease-in-out infinite alternate;
+}
+.throne-btn {
+  position: relative; z-index: 2;
+  width: clamp(90px, 17vmin, 170px); height: clamp(76px, 14.5vmin, 150px);
+  border-radius: clamp(14px, 2.6vmin, 24px);
+  border: none;
+  background: linear-gradient(180deg, #ffe9a8 0%, #ffd166 35%, #e6a417 75%, #c9880e 100%);
+  box-shadow:
+    0 0 0 3px #fff3d0, 0 0 0 6px #b97722,
+    0 10px 0 #7a4a12, 0 18px 36px rgba(0,0,0,0.5),
+    inset 0 4px 10px rgba(255,255,255,0.7);
+  color: #5a2308; font-weight: 900; font-size: clamp(16px, 3.2vmin, 32px);
+  line-height: 1.15; cursor: pointer;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+  animation: throneGlow 2.2s ease-in-out infinite;
+  transition: transform 0.14s ease;
+}
+.throne-btn:hover { transform: translateY(-3px) scale(1.03); }
+.throne-btn:active { transform: translateY(4px); box-shadow: 0 0 0 3px #fff3d0, 0 0 0 6px #b97722, 0 3px 0 #7a4a12, 0 8px 18px rgba(0,0,0,0.4), inset 0 4px 10px rgba(255,255,255,0.7); }
+@keyframes throneGlow {
+  0%, 100% { filter: drop-shadow(0 0 10px rgba(255, 209, 102, 0.45)); }
+  50% { filter: drop-shadow(0 0 26px rgba(255, 209, 102, 0.85)); }
+}
+.throne-btn .crown {
+  position: absolute; top: -12%; left: 50%; transform: translateX(-50%);
+  font-size: clamp(18px, 3.4vmin, 34px);
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+  animation: crownFloat 2.4s ease-in-out infinite alternate;
+}
+@keyframes crownFloat { to { transform: translateX(-50%) translateY(-5px) rotate(6deg); } }
+
+/* تماثيل الاختصار */
+.pedestals { position: relative; z-index: 2; display: flex; gap: clamp(8px, 2vmin, 20px); }
+.pedestal {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  background: linear-gradient(180deg, #8a5a30, #5f3a1a);
+  border: 2px solid #b97722;
+  border-radius: clamp(9px, 1.6vmin, 14px);
+  padding: clamp(3px, 0.9vmin, 9px) clamp(6px, 1.4vmin, 14px);
+  color: var(--cream); font-weight: 900; font-size: clamp(9px, 1.55vmin, 14px);
+  cursor: pointer; box-shadow: 0 5px 0 #3d240e, 0 9px 18px rgba(0,0,0,0.4);
+  transition: transform 0.14s ease;
+  white-space: nowrap;
+}
+.pedestal:hover { transform: translateY(-3px); border-color: var(--gold); }
+.pedestal:active { transform: translateY(2px); box-shadow: 0 2px 0 #3d240e; }
+.pedestal .statue { font-size: clamp(16px, 3vmin, 30px); filter: drop-shadow(0 3px 5px rgba(0,0,0,0.4)); }
+
+/* ============ اللوحات فوق القصر ============ */
+.royal-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(20, 8, 2, 0.55);
+  backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+  animation: fadeIn 0.25s ease; padding: 14px;
+}
+@keyframes fadeIn { from { opacity: 0; } }
+.royal-overlay .candy-panel {
+  width: min(96vw, 460px);
+  max-height: 88vh; overflow-y: auto;
+  animation: panelPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.royal-overlay .big-panel { width: min(96vw, 560px); }
+
+#play-options { display: flex; flex-direction: column; gap: 12px; margin-top: 6px; }
+.play-card {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 16px; border-radius: 18px; cursor: pointer;
+  background: linear-gradient(160deg, #6b3a1c, #4a2410);
+  border: 3px solid #b97722; color: var(--text);
+  box-shadow: 0 6px 0 #2e1608, 0 12px 22px rgba(0,0,0,0.4), inset 0 2px 8px rgba(255,220,160,0.15);
+  transition: transform 0.15s ease;
+}
+.play-card:hover { transform: translateY(-3px); border-color: var(--gold); }
+.play-card:active { transform: translateY(2px); box-shadow: 0 2px 0 #2e1608; }
+.play-card .pc-icon { font-size: 38px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); }
+.play-card b { font-size: 18px; font-weight: 900; color: var(--gold); }
+.play-card small { font-size: 12px; opacity: 0.8; }
+
+.join-private-row, .add-friend-row { display: flex; gap: 8px; margin: 12px 0; }
+.join-private-row input, .add-friend-row input { flex: 1; }
+#private-code-input { letter-spacing: 3px; text-transform: uppercase; direction: ltr; text-align: center; }
+.room-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  background: rgba(255, 240, 210, 0.08); border: 2px solid #7a4a12;
+  border-radius: 14px; padding: 10px 14px; margin-bottom: 8px;
+}
+.room-item .room-name { font-weight: 900; color: var(--cream); }
+.room-item .room-sub { font-size: 12px; opacity: 0.75; display: block; }
+.room-code-display {
+  font-size: 30px; font-weight: 900; letter-spacing: 6px; direction: ltr; text-align: center;
+  color: var(--gold); text-shadow: 0 0 18px rgba(255,209,102,0.6); margin: 8px 0;
+}
+.lobby-player {
+  display: flex; align-items: center; gap: 10px; background: rgba(255,240,210,0.08);
+  border-radius: 12px; padding: 8px 12px; margin: 6px 0; border: 2px solid #7a4a12;
+}
+.lobby-waiting { opacity: 0.55; font-style: italic; }
+.offline-banner {
+  background: rgba(230, 57, 86, 0.2); border: 2px solid rgba(230, 57, 86, 0.6);
+  border-radius: 12px; padding: 10px 14px; font-size: 13px; margin: 10px 0; text-align: center;
+}
+
+/* المتجر */
+#shop-balance {
+  text-align: center; font-size: 16px; font-weight: 900;
+  background: rgba(0,0,0,0.25); border: 2px solid #7a4a12;
+  border-radius: 999px; padding: 7px; margin-bottom: 10px;
+}
+#shop-balance b { color: var(--gold); }
+#shop-tabs, .lb-tabs { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; }
+.shop-tab {
+  flex-shrink: 0; background: rgba(255,240,210,0.1); border: 2px solid #7a4a12; color: var(--cream);
+  font-size: 13px; font-weight: 900; padding: 7px 14px; border-radius: 999px; cursor: pointer;
+}
+.shop-tab.active {
+  background: linear-gradient(180deg, #ffd166, #e6a417);
+  color: #5a2308; border-color: #fff3d0;
+  box-shadow: 0 0 14px rgba(255,209,102,0.55);
+}
+#shop-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.shop-item {
+  background: linear-gradient(165deg, rgba(255, 240, 210, 0.1), rgba(255, 240, 210, 0.03));
+  border: 2px solid #7a4a12; border-radius: 16px;
+  padding: 12px 8px; text-align: center;
+  display: flex; flex-direction: column; gap: 5px; align-items: center;
+}
+.shop-item .item-icon { font-size: 36px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); }
+.shop-item .item-name { font-weight: 900; font-size: 14px; color: var(--cream); }
+.shop-item .item-desc { font-size: 11px; opacity: 0.7; min-height: 26px; }
+.shop-item .item-owned { font-size: 12px; color: var(--green); font-weight: 900; }
+.btn-buy {
+  background: linear-gradient(180deg, #ffd166, #e6a417);
+  border: 2px solid #fff3d0; border-radius: 999px;
+  color: #5a2308; font-weight: 900; font-size: 13px; padding: 6px 16px; cursor: pointer;
+  box-shadow: 0 3px 0 #9a6a0d, 0 6px 12px rgba(0,0,0,0.35);
+}
+.btn-buy:active { transform: translateY(2px); box-shadow: 0 1px 0 #9a6a0d; }
+.btn-buy:disabled { filter: grayscale(0.8); opacity: 0.5; cursor: not-allowed; }
+.btn-buy.equipped { background: linear-gradient(180deg, #7ee787, #2ea043); border-color: #d7ffdd; color: #fff; }
+.btn-buy.gem { background: linear-gradient(180deg, #ff8fd6, #c2418f); border-color: #ffd7ef; color: #fff; }
+
+/* المتصدرين */
+.lb-row {
+  display: flex; align-items: center; gap: 10px;
+  background: linear-gradient(180deg, rgba(255,240,210,0.1), rgba(255,240,210,0.04));
+  border: 2px solid #7a4a12; border-radius: 14px;
+  padding: 8px 12px; margin-bottom: 7px;
+}
+.lb-row .lb-rank {
+  width: 34px; height: 34px; flex-shrink: 0; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 15px;
+  background: linear-gradient(180deg, #6b3a1c, #4a2410); border: 2px solid #b97722;
+}
+.lb-row.top1 .lb-rank { background: linear-gradient(180deg, #ffe08a, #d9a015); color: #5a2308; border-color: #fff3d0; }
+.lb-row.top2 .lb-rank { background: linear-gradient(180deg, #e8e8f0, #9fa4b8); color: #333; border-color: #fff; }
+.lb-row.top3 .lb-rank { background: linear-gradient(180deg, #e8a06a, #a35c28); border-color: #ffd9b0; }
+.lb-row .lb-name { flex: 1; font-weight: 900; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-row .lb-stat { font-size: 13px; font-weight: 900; color: var(--gold); white-space: nowrap; }
+.lb-row.me { border-color: var(--gold); box-shadow: 0 0 16px rgba(255, 209, 102, 0.4); }
+#lb-me { margin-top: 10px; }
+
+/* المهام */
+.mission-row {
+  display: flex; align-items: center; gap: 10px;
+  background: linear-gradient(180deg, rgba(255,240,210,0.1), rgba(255,240,210,0.04));
+  border: 2px solid #7a4a12; border-radius: 16px; padding: 12px; margin-bottom: 10px;
+}
+.mission-icon { font-size: 30px; }
+.mission-meta { flex: 1; }
+.mission-meta b { display: block; font-size: 14px; }
+.mission-bar { height: 10px; background: rgba(0,0,0,0.4); border-radius: 99px; margin-top: 6px; overflow: hidden; }
+.mission-bar div { height: 100%; background: linear-gradient(90deg, #7ee787, #2ea043); border-radius: 99px; transition: width 0.4s ease; }
+.mission-meta small { font-size: 11px; opacity: 0.8; }
+
+/* الهدية */
+#gift-body { text-align: center; padding: 10px 0; }
+#gift-body .gift-big { font-size: 74px; display: block; margin-bottom: 8px; animation: giftWiggle 1.6s ease-in-out infinite; }
+@keyframes giftWiggle { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg) scale(1.06); } }
+
+/* الإعدادات */
+.settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.settings-box {
+  background: linear-gradient(165deg, rgba(255,240,210,0.09), rgba(255,240,210,0.03));
+  border: 2px solid #7a4a12; border-radius: 18px; padding: 14px;
+}
+.settings-box h3 { font-size: 15px; color: var(--gold); margin-bottom: 10px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 14px; font-weight: 700; padding: 7px 0; cursor: pointer;
+}
+.toggle-row input[type="checkbox"] {
+  appearance: none; width: 48px; height: 26px; border-radius: 99px;
+  background: #2e1608; border: 2px solid #7a4a12; position: relative; cursor: pointer;
+  transition: background 0.25s ease; box-shadow: none;
+}
+.toggle-row input[type="checkbox"]::after {
+  content: '🍬'; position: absolute; top: 50%; inset-inline-start: 2px;
+  transform: translateY(-50%); font-size: 16px; transition: inset-inline-start 0.25s ease;
+}
+.toggle-row input[type="checkbox"]:checked { background: linear-gradient(180deg, #7ee787, #2ea043); }
+.toggle-row input[type="checkbox"]:checked::after { inset-inline-start: 24px; }
+#set-account-card { display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 10px; }
+#set-account-card small { color: var(--gold); }
+
+/* الأصدقاء */
+.friend-item {
+  display: flex; align-items: center; gap: 10px;
+  background: linear-gradient(180deg, rgba(255,240,210,0.1), rgba(255,240,210,0.04));
+  border: 2px solid #7a4a12; border-radius: 14px; padding: 9px 12px; margin-bottom: 8px; cursor: pointer;
+}
+.friend-item:active { transform: scale(0.98); }
+.friend-item .friend-meta { flex: 1; }
+.friend-item .friend-name { font-weight: 900; font-size: 14px; display: block; }
+.friend-item .friend-status { font-size: 11px; opacity: 0.75; }
+.friend-item .friend-status.online { color: var(--green); opacity: 1; }
+.friend-actions { display: flex; gap: 6px; }
+.friend-actions button { min-width: 40px; }
+
+#chat-panel {
+  position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column;
+  background: linear-gradient(165deg, #4a2410, #38190a); border-radius: 22px;
+}
+#chat-header {
+  display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+  border-bottom: 2px solid #7a4a12; font-weight: 900;
+}
+#chat-messages { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.chat-bubble { max-width: 75%; padding: 9px 14px; border-radius: 16px; font-size: 14px; line-height: 1.5; word-break: break-word; }
+.chat-bubble.me { align-self: flex-start; background: linear-gradient(180deg, #ff7aa8, #c21f3f); border-bottom-right-radius: 4px; }
+.chat-bubble.them { align-self: flex-end; background: rgba(255,240,210,0.12); border: 1px solid #7a4a12; border-bottom-left-radius: 4px; }
+.chat-time { display: block; font-size: 10px; opacity: 0.6; margin-top: 2px; }
+#chat-input-row { display: flex; gap: 8px; padding: 10px 14px; border-top: 2px solid #7a4a12; }
+#chat-input { flex: 1; }
+
+/* ============ النوافذ المنبثقة ============ */
+.overlay {
+  position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center;
+  background: rgba(20, 8, 2, 0.68); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  animation: fadeIn 0.22s ease; padding: 18px;
+}
+.modal {
+  background: linear-gradient(165deg, #5a2d14 0%, #46220e 50%, #38190a 100%);
+  border-radius: 24px;
+  box-shadow: 0 0 0 4px #b97722, 0 0 0 6px #7a4a12, 0 24px 70px rgba(0,0,0,0.7), inset 0 2px 12px rgba(255,220,160,0.15);
+  padding: 24px 22px; width: 100%; max-width: 420px; max-height: 88vh; overflow-y: auto;
+  animation: panelPop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-align: center;
+}
+.modal h2 { margin-bottom: 14px; font-size: 21px; color: var(--gold); text-shadow: 0 2px 0 #7a4a12; }
+.modal-actions { display: flex; gap: 10px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
+.terms-modal { text-align: right; }
+.terms-modal h2 { text-align: center; }
+.terms-text { font-size: 13.5px; line-height: 1.9; max-height: 46vh; overflow-y: auto; background: rgba(0,0,0,0.22); border-radius: 14px; padding: 14px; margin-bottom: 14px; }
+.terms-text b { color: var(--gold); }
+
+.choice-list { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; }
+.choice-row { display: flex; gap: 10px; justify-content: center; margin: 10px 0; flex-wrap: wrap; }
+.choice-btn {
+  color: var(--text); background: linear-gradient(160deg, #6b3a1c, #4a2410);
+  border: 2px solid #b97722; border-radius: 14px; padding: 13px;
+  font-size: 16px; font-weight: 900; cursor: pointer; transition: all 0.15s ease;
+  display: flex; flex-direction: column; gap: 3px; align-items: center;
+}
+.choice-btn small { font-size: 11px; opacity: 0.75; font-weight: 600; }
+.choice-btn:hover { border-color: var(--gold); transform: translateY(-2px); }
+.choice-btn:active { transform: scale(0.95); }
+.choice-btn.square { width: 70px; height: 70px; font-size: 26px; justify-content: center; }
+.choice-btn.toggle.active {
+  background: linear-gradient(180deg, #ffd166, #e6a417); color: #5a2308; border-color: #fff3d0;
+  box-shadow: 0 0 16px rgba(255,209,102,0.5);
+}
+.choice-btn.toggle.active small { opacity: 0.85; }
+.small-choices .choice-btn { padding: 10px 12px; font-size: 13px; flex: 1; }
+
+/* ================================================================
+   ساحة المعركة المطوّرة
+   ================================================================ */
+#screen-battle {
+  background:
+    radial-gradient(90% 60% at 50% 30%, #6e4120 0%, #4a2410 55%, #2a1206 100%);
+}
+#arena-decor { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.arena-spot {
+  position: absolute; top: 12%; left: 50%; transform: translateX(-50%);
+  width: 90%; height: 60%;
+  background: radial-gradient(ellipse, rgba(255, 209, 102, 0.14), transparent 60%);
+  animation: sunPulse 4.5s ease-in-out infinite alternate;
+}
+.arena-pillar {
+  position: absolute; top: 0; bottom: 0; width: clamp(10px, 2vw, 22px);
+  background: repeating-linear-gradient(45deg, #e2556e 0 12px, #fff3e6 12px 24px);
+  opacity: 0.5;
+  box-shadow: 0 0 14px rgba(0,0,0,0.4);
+}
+.arena-pillar.apr { inset-inline-end: 0; }
+.arena-pillar.apl { inset-inline-start: 0; }
+.arena-sparkles { position: absolute; inset: 0; }
+.arena-sparkles::before, .arena-sparkles::after {
+  content: '✦'; position: absolute; color: rgba(255, 220, 140, 0.5); font-size: 14px;
+  animation: sparkleFloat 7s ease-in-out infinite alternate;
+}
+.arena-sparkles::before { top: 22%; inset-inline-start: 12%; }
+.arena-sparkles::after { top: 60%; inset-inline-end: 10%; animation-delay: 2s; }
+@keyframes sparkleFloat { 50% { opacity: 0.2; } to { transform: translateY(-30px) scale(1.4); } }
+
+#battle-top { position: relative; display: flex; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top)) 14px 8px; gap: 10px; }
+#turn-banner {
+  flex: 1; text-align: center; font-weight: 900; font-size: 16px;
+  background: linear-gradient(180deg, #5a2d14, #3d1f0e); border: 2px solid #b97722;
+  border-radius: 999px; padding: 7px 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+#turn-banner.my-turn {
+  background: linear-gradient(180deg, #ffd166, #e6a417); color: #5a2308; border-color: #fff3d0;
+  box-shadow: 0 0 22px rgba(255, 209, 102, 0.65);
+}
+#timer-wrap { width: 54px; height: 54px; }
+#timer-ring {
+  width: 54px; height: 54px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 17px;
+  background: conic-gradient(#ffd166 calc(var(--p, 1) * 360deg), rgba(255,255,255,0.1) 0deg);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.45), 0 0 14px rgba(255, 209, 102, 0.3);
+}
+#timer-ring span {
+  width: 41px; height: 41px; border-radius: 50%; background: #38190a;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid #7a4a12;
+}
+#timer-ring.warn { background: conic-gradient(#f87171 calc(var(--p, 1) * 360deg), rgba(255,255,255,0.1) 0deg); animation: timerPanic 0.5s infinite; box-shadow: 0 0 20px rgba(248, 113, 113, 0.6); }
+@keyframes timerPanic { 50% { transform: scale(1.12); } }
+
+/* بطاقات اللاعبين + شارة VS */
+#players-hud { position: relative; display: flex; gap: 8px; padding: 2px 12px 8px; flex-wrap: wrap; align-items: stretch; }
+#vs-badge {
+  align-self: center; flex-shrink: 0;
+  width: clamp(34px, 6vmin, 46px); height: clamp(34px, 6vmin, 46px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: clamp(16px, 3vmin, 22px);
+  background: radial-gradient(circle at 35% 30%, #ffe9a8, #e6a417);
+  border: 2px solid #fff3d0; border-radius: 50%;
+  box-shadow: 0 0 18px rgba(255, 209, 102, 0.6), 0 4px 10px rgba(0,0,0,0.4);
+  animation: throneGlow 2s ease-in-out infinite;
+  z-index: 2;
+}
+.player-hud {
+  flex: 1; min-width: 130px;
+  background: linear-gradient(165deg, #5a2d14, #3a1c0b);
+  border: 2px solid #7a4a12;
+  border-radius: 16px; padding: 8px 10px; transition: all 0.25s ease;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.4), inset 0 2px 6px rgba(255,220,160,0.12);
+}
+.player-hud.active-turn {
+  border-color: var(--gold);
+  box-shadow: 0 0 22px rgba(255,209,102,0.5), inset 0 2px 6px rgba(255,220,160,0.2);
+  transform: scale(1.02);
+}
+.player-hud.dead { opacity: 0.4; filter: grayscale(0.8); }
+.player-hud .hud-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.hud-ava-ring {
+  position: relative; flex-shrink: 0;
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: conic-gradient(#ffd166, #e6a417, #ffd166, #b97722, #ffd166);
+  box-shadow: 0 0 10px rgba(255, 190, 80, 0.4);
+}
+.hud-ava-ring .hud-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 35% 30%, #8a5a30, #4a2410);
+  font-size: 16px;
+}
+.hud-ava-ring .hud-frame { position: absolute; top: -8px; inset-inline-end: -7px; font-size: 13px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
+.player-hud .hud-name { font-weight: 900; font-size: 13px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.player-hud .hud-hp-num { font-size: 12px; font-weight: 900; color: var(--gold); }
+.hp-bar {
+  position: relative;
+  display: flex; height: 15px; border-radius: 999px; overflow: hidden;
+  background: rgba(0,0,0,0.5);
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.6), 0 1px 0 rgba(255,220,160,0.15);
+}
+.hp-seg { height: 100%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+.hp-seg.green  { background: linear-gradient(180deg, #6ee7a0, #22c55e); }
+.hp-seg.yellow { background: linear-gradient(180deg, #fde047, #eab308); }
+.hp-seg.red    { background: linear-gradient(180deg, #fca5a5, #ef4444); }
+.hp-bar::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.35) 48%, transparent 60%);
+  background-size: 220% 100%;
+  animation: hpShine 3s linear infinite;
+  pointer-events: none;
+}
+@keyframes hpShine { from { background-position: 180% 0; } to { background-position: -80% 0; } }
+.player-hud.hit { animation: hudHit 0.45s ease; }
+@keyframes hudHit {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); } 40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); } 80% { transform: translateX(4px); }
+}
+
+/* اللوحة الفاخرة */
+#board-wrap { position: relative; flex: 1; display: flex; align-items: center; justify-content: center; padding: 6px 12px; min-height: 0; }
+#board {
+  position: relative;
+  display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr);
+  gap: 4px; padding: 10px;
+  width: min(94vw, 62vh, 520px); height: min(94vw, 62vh, 520px);
+  background:
+    radial-gradient(120% 100% at 50% 0%, rgba(255, 235, 200, 0.08), transparent 50%),
+    linear-gradient(165deg, #3a1c0b, #2a1206);
+  border-radius: 22px;
+  box-shadow:
+    0 0 0 3px #b97722, 0 0 0 6px #7a4a12, 0 0 0 8px #4a2410,
+    0 0 30px rgba(255, 190, 80, 0.25),
+    0 18px 50px rgba(0,0,0,0.55),
+    inset 0 2px 12px rgba(255,220,160,0.1);
+}
+#board::before, #board::after {
+  content: '💎'; position: absolute; font-size: 15px; z-index: 5;
+  filter: drop-shadow(0 0 6px rgba(255, 130, 200, 0.8));
+}
+#board::before { top: -12px; inset-inline-start: 18px; }
+#board::after { top: -12px; inset-inline-end: 18px; }
+#board-lock { position: absolute; inset: 0; z-index: 20; cursor: not-allowed; }
+.candy {
+  display: flex; align-items: center; justify-content: center;
+  font-size: clamp(18px, 5.4vmin, 38px);
+  border-radius: 12px; cursor: grab; position: relative;
+  background: linear-gradient(160deg, rgba(255, 240, 210, 0.1), rgba(255, 240, 210, 0.03));
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.08);
+  transition: transform 0.18s ease, opacity 0.25s ease, background 0.18s ease;
+  touch-action: none;
+  text-shadow: 0 3px 6px rgba(0,0,0,0.35);
+}
+.candy:hover { background: rgba(255, 240, 210, 0.18); }
+.candy.selected { background: rgba(255,209,102,0.3); box-shadow: 0 0 0 3px var(--gold), 0 0 18px rgba(255,209,102,0.7); transform: scale(1.1); z-index: 2; }
+.candy.swap-anim { transition: transform 0.22s ease; z-index: 3; }
+.candy.matched { animation: candyPop 0.4s ease forwards; }
+@keyframes candyPop { 40% { transform: scale(1.35); filter: brightness(1.8); } 100% { transform: scale(0); opacity: 0; } }
+.candy.falling { animation: candyFall 0.4s cubic-bezier(0.34, 1.3, 0.64, 1); }
+@keyframes candyFall { from { transform: translateY(calc(var(--fall, 1) * -100%)); } }
+.candy.shake-invalid { animation: hudHit 0.35s ease; }
+.candy.hint-glow { animation: hintGlow 1s ease infinite; }
+@keyframes hintGlow { 50% { background: rgba(76,217,237,0.35); box-shadow: 0 0 14px rgba(76,217,237,0.8); } }
+
+.flying-candy {
+  position: fixed; z-index: 300; font-size: 26px; pointer-events: none;
+  transition: all 0.7s cubic-bezier(0.5, -0.3, 0.6, 1);
+  filter: drop-shadow(0 0 10px rgba(255,209,102,0.9));
+}
+.impact-burst { position: fixed; z-index: 301; font-size: 30px; pointer-events: none; animation: burstAnim 0.5s ease forwards; }
+@keyframes burstAnim { 0% { transform: scale(0.4); opacity: 1; } 100% { transform: scale(2.2); opacity: 0; } }
+.damage-float {
+  position: fixed; z-index: 302; font-weight: 900; font-size: 24px; color: #ff7b7b;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.7); pointer-events: none; animation: dmgFloat 1s ease forwards;
+}
+@keyframes dmgFloat { to { transform: translateY(-50px); opacity: 0; } }
+.combo-banner {
+  position: fixed; top: 38%; left: 50%; z-index: 310; pointer-events: none;
+  font-size: 34px; font-weight: 900; color: var(--gold);
+  text-shadow: 0 0 24px rgba(255,209,102,0.9), 0 4px 10px rgba(0,0,0,0.6);
+  animation: comboAnim 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes comboAnim {
+  0% { transform: translate(-50%, 0) scale(0.3); opacity: 0; }
+  30% { transform: translate(-50%, 0) scale(1.2); opacity: 1; }
+  75% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -40px) scale(0.9); opacity: 0; }
+}
+.screen-shake { animation: screenShake 0.4s ease; }
+@keyframes screenShake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-8px, 4px); } 40% { transform: translate(8px, -4px); }
+  60% { transform: translate(-6px, -3px); } 80% { transform: translate(6px, 3px); }
+}
+
+#battle-boosters { position: relative; display: flex; justify-content: center; gap: 12px; padding: 8px 12px calc(12px + env(safe-area-inset-bottom)); }
+.booster-btn {
+  position: relative;
+  width: 56px; height: 56px; font-size: 24px; cursor: pointer;
+  background: radial-gradient(circle at 35% 30%, #8a5a30, #4a2410);
+  border: 2.5px solid #b97722; border-radius: 50%;
+  box-shadow: 0 5px 0 #2e1608, 0 10px 18px rgba(0,0,0,0.45), inset 0 2px 6px rgba(255,220,160,0.2);
+  transition: transform 0.15s ease;
+}
+.booster-btn:hover { transform: translateY(-3px); border-color: var(--gold); }
+.booster-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #2e1608; }
+.booster-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.booster-btn.armed { border-color: var(--gold); box-shadow: 0 0 18px rgba(255,209,102,0.8), 0 5px 0 #2e1608; }
+.booster-count {
+  position: absolute; top: -6px; inset-inline-end: -6px;
+  background: var(--candy-red); border: 1.5px solid #ffd9a0;
+  border-radius: 999px; min-width: 20px; height: 20px; font-size: 11px; font-weight: 900;
+  display: flex; align-items: center; justify-content: center; color: #fff;
+}
+
+.end-modal #end-emoji { font-size: 70px; animation: giftWiggle 1.4s infinite; }
+.end-modal h2 { font-size: 30px; }
+.coin-reward { color: var(--gold); font-weight: 900; font-size: 19px; margin-top: 8px; }
+.pass-modal { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+/* Toast */
+#toast-wrap { position: fixed; top: calc(14px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); z-index: 500; display: flex; flex-direction: column; gap: 8px; align-items: center; width: max-content; max-width: 92vw; }
+.toast {
+  background: linear-gradient(180deg, #5a2d14, #3d1f0e); border: 2px solid #b97722;
+  border-radius: 999px; padding: 10px 22px; font-size: 14px; font-weight: 900;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.55); animation: toastIn 0.3s ease;
+}
+.toast.error { border-color: #f87171; }
+.toast.success { border-color: var(--green); }
+@keyframes toastIn { from { opacity: 0; transform: translateY(-16px); } }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: #b97722; border-radius: 99px; }
+
+/* ================================================================
+   التجاوب — كل شيء داخل الشاشة على أي جهاز
+   ================================================================ */
+
+/* الشاشات الطولية (جوال/آيباد عمودي): الشبكة تتكدس عمودياً وتظل داخل الشاشة */
+@media (max-aspect-ratio: 5/6), (max-width: 640px) {
+  #scene-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: minmax(0, 2.2fr) minmax(0, 1.05fr) minmax(0, 1.05fr) minmax(0, 0.62fr);
+    grid-template-areas:
+      "throne   throne"
+      "shop     lb"
+      "missions gift"
+      "settings settings";
+  }
+  /* الإعدادات شريط عريض سفلي */
+  .pl-settings { flex-direction: row; gap: 10px; }
+  .pl-settings .machine-art { font-size: clamp(13px, 2.6vmin, 22px); padding: 3px 10px; }
+  .pl-settings .machine-art i { width: clamp(6px, 1.2vmin, 10px); height: clamp(6px, 1.2vmin, 10px); }
+  .place-hint { display: none; }
+  .throne-zone { padding-bottom: 0; }
+  .throne-back { inset: 0 14% clamp(26px, 7vmin, 56px); }
+}
+
+/* الجوالات */
+@media (max-width: 560px) {
+  .player-hud { min-width: calc(45% - 8px); padding: 6px 8px; }
+  .player-hud .hud-name { font-size: 12px; }
+  .geo-row { grid-template-columns: 1fr; }
+  #castle-profile .chip-meta small { display: none; }
+
+  .candy-panel { padding: 18px 14px; border-radius: 22px; }
+  .panel-title { font-size: 19px; }
+  .royal-overlay { padding: 10px; }
+  .royal-overlay .candy-panel, .royal-overlay .big-panel { width: 100%; max-height: 92vh; }
+  .modal { padding: 20px 16px; max-width: 100%; }
+  .modal h2 { font-size: 19px; }
+
+  .royal-chip { padding: 4px 10px; font-size: 13px; gap: 6px; }
+  .chip-avatar { width: 30px; height: 30px; font-size: 17px; }
+  .royal-chip .plus { width: 17px; height: 17px; font-size: 12px; }
+
+  #shop-items { grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
+  .shop-item .item-icon { font-size: 30px; }
+  .shop-tab { font-size: 12px; padding: 6px 11px; }
+
+  .lb-row { padding: 6px 9px; gap: 7px; }
+  .lb-row .lb-rank { width: 28px; height: 28px; font-size: 13px; }
+  .lb-row .chip-avatar { width: 28px; height: 28px; font-size: 15px; }
+  .lb-row .lb-name { font-size: 13px; }
+  .lb-row .lb-stat { font-size: 11px; }
+
+  .settings-grid { grid-template-columns: 1fr; }
+
+  .choice-btn { padding: 11px; font-size: 14px; }
+  .choice-btn.square { width: 62px; height: 62px; font-size: 23px; }
+  .btn-royal { font-size: 15px; padding: 11px 20px; }
+
+  .auth-panel { max-height: 82vh; padding-bottom: 14px; }
+  #auth-logo h1 { font-size: 26px; }
+  #auth-logo p { font-size: 13px; }
+  .auth-links { justify-content: center; }
+
+  #battle-top { padding: calc(6px + env(safe-area-inset-top)) 10px 6px; }
+  #turn-banner { font-size: 13px; padding: 6px 10px; }
+  #timer-wrap, #timer-ring { width: 46px; height: 46px; }
+  #timer-ring span { width: 35px; height: 35px; font-size: 15px; }
+  .booster-btn { width: 50px; height: 50px; font-size: 21px; }
+  #vs-badge { width: 32px; height: 32px; font-size: 15px; }
+  .mission-row { padding: 9px; gap: 8px; }
+  .mission-icon { font-size: 24px; }
+  #castle-content { padding: 0 clamp(22px, 6vw, 34px) calc(6px + env(safe-area-inset-bottom)); }
+}
+
+/* جوالات صغيرة جداً */
+@media (max-width: 380px) {
+  #shop-items { grid-template-columns: repeat(2, 1fr); }
+  .royal-chip { font-size: 12px; padding: 3px 8px; }
+  #c-username { max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; }
+}
+
+/* الجوال بالعرض (ارتفاع قصير) */
+@media (max-height: 480px) {
+  #board { width: min(94vw, 54vh, 520px); height: min(94vw, 54vh, 520px); }
+  #players-hud { padding: 2px 10px 4px; }
+  .player-hud { padding: 4px 8px; }
+  .hp-bar { height: 10px; }
+  #battle-boosters { padding: 4px 10px calc(6px + env(safe-area-inset-bottom)); }
+  .booster-btn { width: 42px; height: 42px; font-size: 18px; }
+  .auth-panel { max-height: 88vh; }
+  #auth-logo { display: none; }
+  .panel-title { font-size: 17px; margin-bottom: 8px; }
+  #scene-logo h1 { font-size: clamp(16px, 4.4vmin, 24px); }
+  #scene-logo p { display: none; }
+  .hall-frosting { height: 18px; }
+}
+
+/* لابتوب وأكبر: نحدد أقصى ارتفاع للشبكة ونوسّطها حتى ما تصير البطاقات فاضية */
+@media (min-width: 1100px) and (min-height: 700px) {
+  #scene-grid { flex: 0 1 660px; margin: auto 0; width: 100%; }
+}
+
+/* شاشات ضخمة */
+@media (min-width: 1600px) {
+  .royal-overlay .big-panel { width: min(90vw, 680px); }
+  .royal-overlay .candy-panel { width: min(90vw, 540px); }
+  .panel-title { font-size: 26px; }
+  .royal-chip { font-size: 16px; padding: 7px 16px; }
+  .chip-avatar { width: 42px; height: 42px; font-size: 24px; }
+  .auth-panel { width: min(94vw, 500px); }
+  #scene-grid { max-width: 1500px; margin: auto; }
+}
