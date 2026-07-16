@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>حرب الحلويات 🍬⚔️</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -88,7 +88,14 @@
 
 <!-- ============ القصر (الصفحة الرئيسية) ============ -->
 <div id="screen-castle" class="screen">
-  <div id="castle-stage"></div>
+  <!-- حاوية السحب الأفقي (للجوال والشاشات الطولية) -->
+  <div id="castle-scroll">
+    <div id="castle-stage">
+      <div id="castle-bg"></div>
+      <!-- نقاط التفاعل تُبنى بالجافاسكريبت -->
+      <div id="hotspots"></div>
+    </div>
+  </div>
 
   <!-- الشريط العلوي -->
   <div id="castle-topbar">
@@ -102,8 +109,8 @@
     </div>
   </div>
 
-  <!-- نقاط التفاعل تُبنى بالجافاسكريبت -->
-  <div id="hotspots"></div>
+  <!-- تلميح السحب لاستكشاف القصر -->
+  <div id="swipe-hint" class="hidden">⬅️ اسحب لاستكشاف القصر ➡️</div>
 
   <!-- ============ اللوحات ============ -->
 

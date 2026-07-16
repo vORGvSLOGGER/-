@@ -113,7 +113,7 @@ input, select {
   border: 3px solid #e2b46a;
   border-radius: 999px;
   padding: 10px 18px;
-  color: #5a2d14; font-size: 15px; font-weight: 700; outline: none;
+  color: #5a2d14; font-size: 16px; font-weight: 700; outline: none; /* 16px يمنع زوم iOS التلقائي */
   width: 100%;
   box-shadow: inset 0 3px 6px rgba(122, 74, 18, 0.25);
 }
@@ -145,7 +145,8 @@ input[type="password"], #login-code, #reg-code, #rec-newcode { letter-spacing: 6
 #auth-content {
   position: relative; z-index: 2; width: 100%; height: 100%;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 12px; overflow-y: auto;
+  padding: calc(10px + env(safe-area-inset-top)) 12px calc(10px + env(safe-area-inset-bottom));
+  overflow-y: auto;
 }
 #auth-logo { text-align: center; margin-bottom: 10px; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.55)); }
 #auth-logo h1 {
@@ -197,20 +198,48 @@ input[type="password"], #login-code, #reg-code, #rec-newcode { letter-spacing: 6
 
 /* ============ القصر ============ */
 #screen-castle { background: #241005; }
-#castle-stage {
+
+/* حاوية السحب الأفقي: على الجوال العمودي تسحب لاستكشاف القصر كاملاً */
+#castle-scroll {
   position: absolute; inset: 0;
-  background: url('../img/bg-castle.jpg') center/cover no-repeat;
+  overflow-x: auto; overflow-y: hidden;
+  direction: ltr; /* حتى يكون حساب التمرير موحداً في كل المتصفحات */
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+#castle-scroll::-webkit-scrollbar { display: none; }
+
+#castle-stage { position: relative; direction: rtl; }
+#castle-bg {
+  position: absolute; inset: 0;
+  background: url('../img/bg-castle.jpg') center/100% 100% no-repeat;
   animation: castleIn 1.1s ease;
+  transition: transform 0.55s ease, filter 0.55s ease;
+  will-change: transform;
 }
 @keyframes castleIn { from { transform: scale(1.15); filter: brightness(1.9); } }
 
 #castle-topbar {
   position: absolute; top: 0; left: 0; right: 0; z-index: 20;
   display: flex; justify-content: space-between; align-items: flex-start;
-  padding: 10px 12px; gap: 8px;
+  padding: calc(8px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) 8px calc(10px + env(safe-area-inset-left));
+  gap: 8px;
   pointer-events: none;
 }
 #castle-topbar > * { pointer-events: auto; }
+
+#swipe-hint {
+  position: absolute; bottom: calc(18px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%);
+  z-index: 25; pointer-events: none;
+  background: linear-gradient(180deg, #5a2d14, #3d1f0e);
+  border: 2px solid #d9a441; border-radius: 999px;
+  padding: 8px 20px; font-size: 14px; font-weight: 900; color: var(--gold);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.55);
+  animation: hintSlide 1.6s ease-in-out infinite alternate;
+  white-space: nowrap;
+}
+@keyframes hintSlide { from { transform: translateX(calc(-50% - 14px)); } to { transform: translateX(calc(-50% + 14px)); } }
 
 .royal-chip {
   display: inline-flex; align-items: center; gap: 8px;
@@ -245,8 +274,9 @@ button.royal-chip:active { transform: scale(0.95); }
 .coin-pop { animation: coinPop 0.5s ease; }
 @keyframes coinPop { 50% { transform: scale(1.25); } }
 
-/* نقاط التفاعل */
+/* نقاط التفاعل (داخل المشهد فتتحرك معه عند السحب) */
 #hotspots { position: absolute; inset: 0; z-index: 10; }
+#hotspots .hotspot { position: absolute; }
 .hotspot {
   position: absolute; transform: translate(-50%, -50%);
   border: none; background: none; cursor: pointer;
@@ -279,8 +309,6 @@ button.royal-chip:active { transform: scale(0.95); }
   box-shadow: 0 0 22px rgba(255, 209, 102, 0.8), 0 5px 12px rgba(0,0,0,0.5);
 }
 
-/* زوم الدخول لأي مكان */
-#castle-stage.zoom-to { transition: transform 0.55s ease, filter 0.55s ease; }
 
 /* ============ اللوحات فوق القصر ============ */
 .royal-overlay {
@@ -517,7 +545,7 @@ button.royal-chip:active { transform: scale(0.95); }
 
 /* ============ شاشة المعركة ============ */
 #screen-battle { background: linear-gradient(160deg, #2a1206 0%, #4a2410 55%, #5f2c17 100%); }
-#battle-top { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; gap: 10px; }
+#battle-top { display: flex; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top)) 14px 10px; gap: 10px; }
 #turn-banner {
   flex: 1; text-align: center; font-weight: 900; font-size: 16px;
   background: linear-gradient(180deg, #5a2d14, #3d1f0e); border: 2px solid #b97722;
@@ -654,8 +682,95 @@ button.royal-chip:active { transform: scale(0.95); }
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-thumb { background: #b97722; border-radius: 99px; }
 
+/* ============ التجاوب مع كل أحجام الشاشات ============ */
+
+/* آيباد والتابلت (عمودي) */
+@media (max-width: 900px) {
+  .royal-overlay .big-panel { width: min(96vw, 540px); }
+}
+
+/* الجوالات */
 @media (max-width: 560px) {
-  .player-hud { min-width: calc(50% - 8px); }
+  .player-hud { min-width: calc(50% - 8px); padding: 6px 8px; }
+  .player-hud .hud-name { font-size: 12px; }
   .geo-row { grid-template-columns: 1fr; }
   #castle-profile .chip-meta small { display: none; }
+
+  /* اللوحات والنوافذ */
+  .candy-panel { padding: 18px 14px; border-radius: 22px; }
+  .panel-title { font-size: 19px; }
+  .royal-overlay { padding: 10px; }
+  .royal-overlay .candy-panel, .royal-overlay .big-panel { width: 100%; max-height: 92vh; }
+  .modal { padding: 20px 16px; max-width: 100%; }
+  .modal h2 { font-size: 19px; }
+
+  /* الشريط العلوي أصغر */
+  .royal-chip { padding: 4px 10px; font-size: 13px; gap: 6px; }
+  .chip-avatar { width: 30px; height: 30px; font-size: 17px; }
+  .royal-chip .plus { width: 17px; height: 17px; font-size: 12px; }
+
+  /* المتجر شبكة أصغر */
+  #shop-items { grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
+  .shop-item .item-icon { font-size: 30px; }
+  .shop-tab { font-size: 12px; padding: 6px 11px; }
+
+  /* المتصدرين */
+  .lb-row { padding: 6px 9px; gap: 7px; }
+  .lb-row .lb-rank { width: 28px; height: 28px; font-size: 13px; }
+  .lb-row .chip-avatar { width: 28px; height: 28px; font-size: 15px; }
+  .lb-row .lb-name { font-size: 13px; }
+  .lb-row .lb-stat { font-size: 11px; }
+
+  /* الإعدادات عمود واحد */
+  .settings-grid { grid-template-columns: 1fr; }
+
+  /* أزرار الاختيار */
+  .choice-btn { padding: 11px; font-size: 14px; }
+  .choice-btn.square { width: 62px; height: 62px; font-size: 23px; }
+  .btn-royal { font-size: 15px; padding: 11px 20px; }
+
+  /* شاشة التسجيل */
+  .auth-panel { max-height: 82vh; padding-bottom: 14px; }
+  #auth-logo h1 { font-size: 26px; }
+  #auth-logo p { font-size: 13px; }
+  .auth-links { justify-content: center; }
+
+  /* المعركة */
+  #battle-top { padding: calc(6px + env(safe-area-inset-top)) 10px 6px; }
+  #turn-banner { font-size: 13px; padding: 6px 10px; }
+  #timer-wrap, #timer-ring { width: 46px; height: 46px; }
+  #timer-ring span { width: 35px; height: 35px; font-size: 15px; }
+  .booster-btn { width: 48px; height: 48px; font-size: 21px; }
+  .mission-row { padding: 9px; gap: 8px; }
+  .mission-icon { font-size: 24px; }
+}
+
+/* جوالات صغيرة جداً */
+@media (max-width: 380px) {
+  #shop-items { grid-template-columns: repeat(2, 1fr); }
+  .royal-chip { font-size: 12px; padding: 3px 8px; }
+  #c-username { max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; }
+}
+
+/* الجوال بالعرض (ارتفاع قصير) */
+@media (max-height: 480px) {
+  #board { width: min(94vw, 54vh, 520px); height: min(94vw, 54vh, 520px); }
+  #players-hud { padding: 2px 10px 4px; }
+  .player-hud { padding: 4px 8px; }
+  .hp-bar { height: 10px; }
+  #battle-boosters { padding: 4px 10px calc(6px + env(safe-area-inset-bottom)); }
+  .booster-btn { width: 42px; height: 42px; font-size: 18px; }
+  .auth-panel { max-height: 88vh; }
+  #auth-logo { display: none; }
+  .panel-title { font-size: 17px; margin-bottom: 8px; }
+}
+
+/* شاشات ضخمة (كمبيوتر كبير/4K): لوحات أوسع وخط أكبر */
+@media (min-width: 1600px) {
+  .royal-overlay .big-panel { width: min(90vw, 680px); }
+  .royal-overlay .candy-panel { width: min(90vw, 540px); }
+  .panel-title { font-size: 26px; }
+  .royal-chip { font-size: 16px; padding: 7px 16px; }
+  .chip-avatar { width: 42px; height: 42px; font-size: 24px; }
+  .auth-panel { width: min(94vw, 500px); }
 }
