@@ -73,14 +73,12 @@ const Auth = (() => {
     });
   }
 
-  // تبديل اللوحات مع أنيميشن الخلفية فقط
+  // تبديل اللوحات مع أنيميشن المشهد الخلفي (الشمس تتحرك والألوان تتغير)
   function switchPanel(name) {
     Sounds.click();
     currentPanel = name;
     ['login', 'register', 'recover'].forEach(p => $('auth-' + p).classList.toggle('hidden', p !== name));
-    const showReg = name === 'register';
-    $('auth-bg-login').classList.toggle('hidden-bg', showReg);
-    $('auth-bg-register').classList.toggle('hidden-bg', !showReg);
+    $('auth-scenery').classList.toggle('alt', name !== 'login');
     const panel = $('auth-' + name);
     panel.style.animation = 'none';
     void panel.offsetWidth;
@@ -176,8 +174,9 @@ const Auth = (() => {
   function enterCastle() {
     const auth = $('screen-auth');
     const content = $('auth-content');
+    const scenery = $('auth-scenery');
     content.classList.add('auth-zooming');
-    document.querySelectorAll('.auth-bg').forEach(b => b.classList.add('auth-zooming'));
+    scenery.classList.add('auth-zooming');
     $('castle-entry').classList.remove('hidden');
     Sounds.turn();
     setTimeout(() => {
@@ -190,7 +189,7 @@ const Auth = (() => {
     setTimeout(() => {
       $('castle-entry').classList.add('hidden');
       content.classList.remove('auth-zooming');
-      document.querySelectorAll('.auth-bg').forEach(b => b.classList.remove('auth-zooming'));
+      scenery.classList.remove('auth-zooming');
     }, 1700);
   }
 

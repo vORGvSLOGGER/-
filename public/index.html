@@ -12,8 +12,24 @@
 
 <!-- ============ شاشة التسجيل / الدخول ============ -->
 <div id="screen-auth" class="screen active">
-  <div class="auth-bg" id="auth-bg-login"></div>
-  <div class="auth-bg hidden-bg" id="auth-bg-register"></div>
+  <!-- مشهد أرض الحلويات (مبني بالكود بالكامل) -->
+  <div id="auth-scenery" class="candy-scenery">
+    <div class="sc-sun"></div>
+    <div class="sc-clouds"><span>☁️</span><span>☁️</span><span>☁️</span></div>
+    <div class="sc-castle">
+      <div class="tower t1"><span class="flag">🚩</span></div>
+      <div class="tower t2"><span class="flag">🚩</span></div>
+      <div class="tower t3"><span class="flag">🚩</span></div>
+      <div class="castle-body"><span class="gate"></span></div>
+    </div>
+    <div class="sc-hill h1"></div>
+    <div class="sc-hill h2"></div>
+    <div class="sc-hill h3"></div>
+    <div class="sc-river"></div>
+    <div class="sc-lolli l1"><i></i></div>
+    <div class="sc-lolli l2"><i></i></div>
+    <div class="sc-candies"><span>🍬</span><span>🍭</span><span>🧁</span><span>🍩</span><span>🍫</span><span>🍪</span></div>
+  </div>
   <div id="auth-content">
     <div id="auth-logo">
       <h1>🍬 حرب الحلويات ⚔️</h1>
@@ -88,13 +104,13 @@
 
 <!-- ============ القصر (الصفحة الرئيسية) ============ -->
 <div id="screen-castle" class="screen">
-  <!-- حاوية السحب الأفقي (للجوال والشاشات الطولية) -->
-  <div id="castle-scroll">
-    <div id="castle-stage">
-      <div id="castle-bg"></div>
-      <!-- نقاط التفاعل تُبنى بالجافاسكريبت -->
-      <div id="hotspots"></div>
-    </div>
+  <!-- قاعة القصر (مبنية بالكود بالكامل، تتكيف مع أي شاشة بدون سحب) -->
+  <div id="castle-hall">
+    <div class="hall-frosting"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="hall-pillar pr"></div>
+    <div class="hall-pillar pl"></div>
+    <div class="hall-floor"></div>
+    <div class="hall-glow"></div>
   </div>
 
   <!-- الشريط العلوي -->
@@ -109,8 +125,66 @@
     </div>
   </div>
 
-  <!-- تلميح السحب لاستكشاف القصر -->
-  <div id="swipe-hint" class="hidden">⬅️ اسحب لاستكشاف القصر ➡️</div>
+  <!-- محتوى القصر: شعار + أماكن اللعب (كلها داخل الشاشة دائماً) -->
+  <div id="castle-content">
+    <div id="scene-logo">
+      <h1>🍬 حرب الحلويات ⚔️</h1>
+      <p>المغامرة الحُلوة تبدأ!</p>
+    </div>
+
+    <div id="scene-grid">
+      <!-- المتجر الملكي -->
+      <button class="place pl-shop" id="pl-shop">
+        <span class="place-sign">🏪 المتجر الملكي</span>
+        <span class="place-art shop-shelf">
+          <i>🎨</i><i>😎</i><i>🖼️</i><i>💣</i><i>🪙</i><i>💎</i>
+        </span>
+        <span class="place-hint">لوك • أفاتار • إطارات</span>
+      </button>
+
+      <!-- المهام اليومية -->
+      <button class="place pl-missions" id="pl-missions">
+        <span class="place-sign">📜 المهام اليومية</span>
+        <span class="place-art scroll-art">
+          <i class="scroll-line"></i><i class="scroll-line"></i><i class="scroll-line"></i>
+        </span>
+        <span class="place-hint">جوائز كل يوم</span>
+      </button>
+
+      <!-- العرش: ابدأ اللعب -->
+      <div class="throne-zone">
+        <div class="throne-back"><span class="throne-gem">💎</span></div>
+        <button id="pl-play" class="throne-btn"><span class="crown">👑</span>ابدأ<br>اللعب</button>
+        <div class="pedestals">
+          <button class="pedestal" id="pl-bot"><span class="statue">🤖</span><b>بوت أو أونلاين</b></button>
+          <button class="pedestal" id="pl-local"><span class="statue">📱</span><b>بنفس الجهاز</b></button>
+        </div>
+      </div>
+
+      <!-- المتصدرين -->
+      <button class="place pl-lb" id="pl-lb">
+        <span class="place-sign">🏆 المتصدرين</span>
+        <span class="place-art lb-preview" id="lb-preview">
+          <i>👑 —</i><i>🥈 —</i><i>🥉 —</i>
+        </span>
+        <span class="place-hint">قاعة الأبطال</span>
+      </button>
+
+      <!-- الصندوق الملكي -->
+      <button class="place pl-gift" id="pl-gift">
+        <span class="place-sign">🎁 الصندوق الملكي</span>
+        <span class="place-art chest-art">🎁</span>
+        <span class="place-hint">هدية يومية</span>
+      </button>
+
+      <!-- الإعدادات -->
+      <button class="place pl-settings" id="pl-settings">
+        <span class="place-sign">⚙️ الإعدادات</span>
+        <span class="place-art machine-art"><i></i><i></i><i></i>🎛️</span>
+        <span class="place-hint">الحساب والأصدقاء</span>
+      </button>
+    </div>
+  </div>
 
   <!-- ============ اللوحات ============ -->
 
@@ -261,6 +335,13 @@
 
 <!-- ============ شاشة المعركة ============ -->
 <div id="screen-battle" class="screen">
+  <!-- ديكور الساحة -->
+  <div id="arena-decor">
+    <div class="arena-spot"></div>
+    <div class="arena-pillar apr"></div>
+    <div class="arena-pillar apl"></div>
+    <div class="arena-sparkles"></div>
+  </div>
   <div id="battle-top">
     <button id="btn-battle-quit" class="icon-btn danger" title="انسحاب">✖</button>
     <div id="turn-banner">دور: <span id="turn-name">...</span></div>

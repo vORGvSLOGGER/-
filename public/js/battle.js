@@ -41,7 +41,7 @@ const Battle = (() => {
       }));
     } else { // online
       players = config.onlinePlayers.map((p, i) => ({
-        name: p.name, avatar: p.avatar, control: i === config.myIndex ? 'me' : 'remote',
+        name: p.name, avatar: p.avatar, frame: p.frame || '', control: i === config.myIndex ? 'me' : 'remote',
       }));
     }
 
@@ -93,15 +93,26 @@ const Battle = (() => {
       const d = document.createElement('div');
       d.className = 'player-hud';
       d.id = 'hud-' + i;
+      const frame = (p.control === 'me' && Profile.data.frame) ? Profile.data.frame : (p.frame || '');
       d.innerHTML = `
         <div class="hud-row">
-          <span class="hud-avatar">${p.avatar}</span>
+          <span class="hud-ava-ring">
+            <span class="hud-avatar">${p.avatar}</span>
+            ${frame ? `<span class="hud-frame">${frame}</span>` : ''}
+          </span>
           <span class="hud-name">${p.name}</span>
           <span class="hud-shield hidden">🛡️</span>
           <span class="hud-hp-num">${p.hp}</span>
         </div>
         <div class="hp-bar"></div>`;
       wrap.appendChild(d);
+      // شارة VS بين لاعبَين
+      if (S.players.length === 2 && i === 0) {
+        const vs = document.createElement('div');
+        vs.id = 'vs-badge';
+        vs.textContent = '⚔️';
+        wrap.appendChild(vs);
+      }
     });
     updateHud();
   }

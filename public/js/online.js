@@ -42,7 +42,7 @@ const Online = (() => {
       currentRoom = room;
       Battle.start({
         type: 'online', mode, seed, myIndex: yourIndex,
-        onlinePlayers: room.players.map(p => ({ name: p.username, avatar: p.avatar })),
+        onlinePlayers: room.players.map(p => ({ name: p.username, avatar: p.avatar, frame: p.frame })),
       });
     });
     socket.on('battle:event', (data) => Battle.onRemoteEvent(data));
